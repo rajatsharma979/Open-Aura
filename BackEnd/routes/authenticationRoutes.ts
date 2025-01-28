@@ -17,5 +17,7 @@ router.get('/home', isAuthenticated, (req: Request, res: Response)=>{
 
 router.post('/refresh', authController.postRefreshTokens);
 
+router.post('/logout', authController.logout);
+
 
 export default router;

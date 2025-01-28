@@ -41,7 +41,7 @@ const generateTokens = (user: userType) => {
             email: user.email
         },
         process.env.JWT_Access_Secret!,
-        { expiresIn: "15m"}
+        { expiresIn: Number(process.env.JWT_Access_Token_Expiry) }
 
     );
 
@@ -50,7 +50,7 @@ const generateTokens = (user: userType) => {
             id: user._id
         },
         process.env.JWT_Refresh_Secret!,
-        { expiresIn: "1d"}
+        { expiresIn: Number(process.env.JWT_Access_Token_Expiry) }
     )
     return { accessToken, refreshToken };
 }
@@ -145,14 +145,14 @@ const postLogin = async (req: Request, res: Response) => {
             httpOnly: true,
             //secure: true,             // set this true in production as it sends cookie over https only
             sameSite: 'strict',         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
-            maxAge: 15*60*1000          //15 min in millis
+            maxAge: Number(process.env.Access_Token_Cookie_Expiry)         //15 min in millis
         });
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             //secure: true,            // set this true in production as it sends cookie over https only
             sameSite: 'strict',        // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links.
-            maxAge: 1*24*60*60*1000              //1 day in millis
+            maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)              //1 day in millis
         })
 
         res.status(200).json({ "msg": "logged in successfully" });
@@ -172,14 +172,14 @@ const postRefreshTokens = async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken;
 
         if (!refreshToken) {
-            res.status(400).json({ "error": "Token not provided" });
+            res.status(400).json({ "error": "Please login again" });
             return;
         }
 
         const verified = jsonwebtoken.verify(refreshToken, process.env.JWT_Refresh_Secret!) as refreshTokenType;
 
         if (!verified) {
-            res.status(401).json({ "error": "Invalid token. It may be expired" })
+            res.status(401).json({ "error": "Invalid token. Please Login again" })
             return;
         }
 
@@ -196,14 +196,14 @@ const postRefreshTokens = async (req: Request, res: Response) => {
             httpOnly: true,
             //secure: true,             
             sameSite: 'strict',
-            maxAge: 15*60*1000
+            maxAge: Number(process.env.Access_Token_Cookie_Expiry)
         });
 
         res.cookie('refreshToken', newTokens.refreshToken, {
             httpOnly: true,
             //secure: true,            
             sameSite: 'strict',
-            maxAge: 1 * 24 * 60 * 1000
+            maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)
         })
 
         user.refreshToken = newTokens.refreshToken;
@@ -219,8 +219,50 @@ const postRefreshTokens = async (req: Request, res: Response) => {
 
 }
 
+const logout = async (req: Request, res: Response) => {
+
+    try {
+
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            res.status(400).json({ "error": "Access Denied, Login Again" });
+            return;
+        }
+
+        const user = await User.findOne({ refreshToken: refreshToken });
+
+        if (!user) {
+            res.status(400).json({ "error": "Invalid again" })
+            return;
+        }
+
+        res.clearCookie('accessToken', {
+            httpOnly: true,
+            //secure: true,            // set this true in production as it sends cookie over https only
+            sameSite: 'strict',
+        });
+
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            //secure: true,            // set this true in production as it sends cookie over https only
+            sameSite: 'strict',
+        });
+
+        user.refreshToken = "";
+        await user.save();
+
+        res.status(200).json({ 'msg': 'logout successful' });
+        return;
+    }
+    catch (err) {
+        res.status(500).json({ 'error': "Internal server error" });
+        console.log('Internal server error while logging out: ', err);
+    }
+}
 export default {
     postSignup,
     postLogin,
-    postRefreshTokens
+    postRefreshTokens,
+    logout
 }

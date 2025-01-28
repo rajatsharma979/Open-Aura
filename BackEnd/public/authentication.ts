@@ -18,7 +18,7 @@ const isAuthenticated = (req: Request & {user?: accessTokenData}, res: Response,
         const token = req.cookies.accessToken;
     
         if(!token){
-            res.status(401).json({'error': 'Access denied, No token provided'});
+            res.status(401).json({'error': 'Access denied, Please Login Again'});
             return;
         }
     
