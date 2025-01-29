@@ -4,15 +4,18 @@ import jsonwebtoken, { JwtPayload } from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import nodemailer from "nodemailer";
 import { Document } from "mongoose";
+import passport from "passport";
+import { Profile } from "passport";
+import { Strategy as GoogleStrategy, VerifyFunction} from "passport-google-oauth2";
 import dotenv from "dotenv";
 dotenv.config();
 
 import User from "../models/userModel.js";
+import accessTokenData from "../types/accessTokenType.js";
 
 interface refreshTokenType extends JwtPayload {
     id: string
 }
-
 interface userType extends Document {
     name: string,
     email: string,
@@ -22,6 +25,23 @@ interface userType extends Document {
 
 type loginData = { email: string; password: string };
 type signupData = { name: string, email: string, password: string };
+
+// passport.use(new GoogleStrategy({
+//     clientID:     process.env.Google_Client_Id!,
+//     clientSecret: process.env.Google_Client_Secret!,
+//     callbackURL: "http://localhost:3000/auth/google/callback",
+//     passReqToCallback   : true
+//   },
+//   async (req: Request, accessToken: string, refreshToken: string | undefined, profile: Profile, done: VerifyFunction) =>{
+
+//     const user = await User.findOne({googleId: profile.id});
+
+//     if(user){
+//         return done(null, user, undefined);
+//     }
+    
+//   }
+// ));
 
 const emailConfiguration = {
     host: process.env.Brevo_smtpServer,

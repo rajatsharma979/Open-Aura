@@ -4,14 +4,9 @@ import jsonwebtoken, { JwtPayload} from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
-interface accessTokenData extends JwtPayload{ //make tokenData like JwtPayload as we will assign later to first below. As JwtPayload have other fields as well other than our custom fields so we need to inherit those.
-    id: string,
-    name: string,
-    email: string,
-};
+import accessTokenData from "../types/accessTokenType";
 
-
-const isAuthenticated = (req: Request & {user?: accessTokenData}, res: Response, next: NextFunction)=>{ // (req: Request & {user: tokenData} because we would assign user object to req as req.user = user below;
+const isAuthenticated = (req: Request, res: Response, next: NextFunction)=> { // (req: Request & {user: tokenData} because we would assign user object to req as req.user = user below;
 
     try{
 

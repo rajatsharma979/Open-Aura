@@ -11,11 +11,13 @@ router.post('/login', dataValidator.validateLoginData, authController.postLogin)
 
 router.post('/signup', dataValidator.validateSignupData, authController.postSignup);
 
-router.get('/home', isAuthenticated, (req: Request, res: Response)=>{
+router.get('/home' ,isAuthenticated, (req: Request, res: Response)=>{
     res.json("entered in protected route");
-})
+});
 
-router.post('/refresh', authController.postRefreshTokens);
+router.post('/auth/google', );
+
+router.post('/refresh',authController.postRefreshTokens);
 
 router.post('/logout', authController.logout);
 
