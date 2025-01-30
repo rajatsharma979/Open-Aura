@@ -101,6 +101,7 @@ export default function Signup() {
             ))}
           </div>
         )}
+        <div><a href="http://localhost:3000/auth/google">Sign up with google</a> </div>
       </form>
     </div>
   )

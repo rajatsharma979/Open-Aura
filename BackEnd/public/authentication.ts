@@ -1,16 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-import jsonwebtoken, { JwtPayload} from "jsonwebtoken";
+import jsonwebtoken from "jsonwebtoken";
 
 import dotenv from "dotenv";
 dotenv.config();
 
-import accessTokenData from "../types/accessTokenType";
+import {accessTokenData} from "../types/authTypes";
 
 const isAuthenticated = (req: Request, res: Response, next: NextFunction)=> { // (req: Request & {user: tokenData} because we would assign user object to req as req.user = user below;
 
     try{
 
         const token = req.cookies.accessToken;
+        //const token = req.headers.authorization?.split(" ")[1];
     
         if(!token){
             res.status(401).json({'error': 'Access denied, Please Login Again'});

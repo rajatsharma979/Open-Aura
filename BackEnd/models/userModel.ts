@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 const user = new Schema({
+    googleId:{
+        type: String
+    },
+    auth:{
+        type: String
+    },
     name:{
         type: String,
         required: true
@@ -11,7 +17,7 @@ const user = new Schema({
     },
     password:{
         type: String,
-        required: true
+    
     },
     refreshToken:{
         type: String

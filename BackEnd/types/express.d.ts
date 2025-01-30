@@ -1,5 +1,5 @@
 import { Request } from "express";
-import accessTokenData from "./accessTokenType";
+import accessTokenData from "./authTypes";
 
 declare global {
   namespace Express {
