@@ -87,10 +87,12 @@ export default function Signup() {
           <button
             type="submit"
             className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            
           >
             Sign Up
           </button>
+        </div>
+        <div>
+          <a href="http://localhost:3000/auth/google">Sign up with google</a>
         </div>
         {errors.length > 0 && (
           <div className="error-messages mt-4">
