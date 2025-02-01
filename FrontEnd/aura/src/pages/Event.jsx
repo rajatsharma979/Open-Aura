@@ -77,6 +77,7 @@ const EventLandingPage = () => {
   const [selectedDate, setSelectedDate] = useState("")
   const [darkMode, setDarkMode] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  
   const navigate = useNavigate();
 
 
@@ -102,41 +103,42 @@ const EventLandingPage = () => {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
   }
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/logout",
+        {},
+        {
+          withCredentials: true, // This is important to include cookies in the request
+        },
+      )
 
-const handleLogout = async () => {
-  try {
-    const response = await axios.post('http://localhost:3000/logout', {}, {
-      withCredentials: true // This is crucial for sending cookies
-    });
-
-    if (response.status === 200) {
-      console.log(response.data.msg); // 'logout successful'
-      // Clear any client-side storage
-      localStorage.removeItem('user'); // If you're storing any user data in localStorage
-      sessionStorage.clear(); // Clear any session storage
-      // Redirect to home page or login page
-      navigate('/');
-    }
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error("Logout failed:", error.response.data.error);
-        if (error.response.status === 400) {
-          // Handle "Access Denied" or "Invalid" errors
-          alert(error.response.data.error);
-        }
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error("No response received:", error.request);
+      if (response.status === 200) {
+        // Logout successful
+        console.log(response.data.msg)
+        // Redirect to login page or home page
+        navigate("/login")
       }
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error("Error:", error);
-    }
-  }
-};
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        // Axios error
+        if (err.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(err.response.data.error || "An error occurred during logout")
+        } else if (err.request) {
+          // The request was made but no response was received
+          console.log("No response received from server")
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error setting up the request")
+        }
+      } else {
+        // Non-Axios error
+        console.log("An unexpected error occurred")
+      }
+    }}
+
 
   
   const handleJoinUpcomingEvent = (eventId) => {
