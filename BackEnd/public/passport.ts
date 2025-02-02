@@ -20,7 +20,7 @@ const emailConfiguration = {
     }
 }
 
-const sendMail = (email: string | undefined)=>{
+const sendMail = (email: string | undefined, name: string | undefined)=>{
 
     const transporter = nodemailer.createTransport(emailConfiguration);
 
@@ -104,7 +104,7 @@ passport.use(new GoogleStrategy({
 
             const { accessToken, refreshToken} = generateTokens(newUser);
 
-            sendMail(profile.emails?.[0].value);
+            sendMail(profile.emails?.[0].value, profile.displayName);
 
             return done(null, { newUser, accessToken: accessToken, refreshToken: refreshToken});
         } 
