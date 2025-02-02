@@ -14,7 +14,10 @@ export default function Login() {
     e.preventDefault()
     setErrors([])
     axios
-      .post("http://localhost:3000/login", { email, password }, { headers: { "Content-Type": "application/json" } })
+      .post("http://localhost:3000/login",
+       { email, password }, 
+       { headers: { "Content-Type": "application/json" },
+       withCredentials: true })
       .then((result) => {
         console.log(result.data)
         navigate("/event")
