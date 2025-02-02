@@ -17,8 +17,6 @@ router.get('/home' ,isAuthenticated, (req: Request, res: Response)=>{
     res.json("entered in protected route");
 });
 
-router.post('/auth/google', );
-
 router.post('/refresh',authController.postRefreshTokens);
 
 router.get('/auth/google', passport.authenticate('google', {scope: ['email', 'profile']}));
@@ -51,7 +49,7 @@ router.get('/auth/google/callback',
             maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)         //15 min in millis
         });
 
-        res.json({"msg": "successfully registered"});
+        res.status(200).json({"msg": "successfully registered"});
         return;
     });
 
