@@ -12,14 +12,16 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction)=> { //
 
         const token = req.cookies.accessToken;
         //const token = req.headers.authorization?.split(" ")[1];
-    
+        
         if(!token){
             res.status(401).json({'error': 'Access denied, Please Login Again'});
             return;
         }
     
+        
         const tokenData = jsonwebtoken.verify(token, process.env.JWT_Access_Secret!) as accessTokenData; // typecast JwtPayload to tokenData to tell typescript that JwtPayload will contain our tokenData fields.
     
+        console.log(tokenData);
         if(!tokenData){
             res.status(401).json({'error': 'Access Denied, Login again'});
             return;
@@ -31,7 +33,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction)=> { //
         }
 
         req.user = tokenData;
-        next();
+        res.status(200).json({"msg": "access granted"});
     }
     catch(err){
         console.log("Internal server error while verifying jwt token", err);

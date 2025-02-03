@@ -13,20 +13,18 @@ router.post('/login', dataValidator.validateLoginData, authController.postLogin)
 
 router.post('/signup', dataValidator.validateSignupData, authController.postSignup);
 
-router.get('/home' ,isAuthenticated, (req: Request, res: Response)=>{
-    res.json("entered in protected route");
-});
+router.post('/isAuthenticated' ,isAuthenticated);
 
 router.post('/refresh',authController.postRefreshTokens);
 
-// router.get('/auth/google', passport.authenticate('google', {scope: ['email', 'profile']}));
-router.get("/auth/google", (req: Request, res: Response, next) => {
-    const redirectUrl = req.query.redirect as string
-    passport.authenticate("google", {
-      scope: ["email", "profile"],
-      state: redirectUrl, // Pass the redirect URL as state
-    })(req, res, next)
-  })
+router.get('/auth/google', passport.authenticate('google', {scope: ['email', 'profile']}));
+// router.get("/auth/google", (req: Request, res: Response, next) => {
+//     const redirectUrl = req.query.redirect as string
+//     passport.authenticate("google", {
+//       scope: ["email", "profile"],
+//       state: redirectUrl, // Pass the redirect URL as state
+//     })(req, res, next)
+//   })
 
 router.post('/logout', authController.logout);
 

@@ -6,11 +6,12 @@ const PrivateRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
 
     useEffect(() => {
-        axios.get("http://localhost:3000/isAuthenticated", {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true
-        })
-        .then(() => setIsAuthenticated(true))
+        axios
+        .post("http://localhost:3000/isAuthenticated",
+            {}, 
+            { headers: { "Content-Type": "application/json" },
+            withCredentials: true })
+        .then((result) => {console.log(result);setIsAuthenticated(true)})
         .catch(() => setIsAuthenticated(false));
     }, []);
 
