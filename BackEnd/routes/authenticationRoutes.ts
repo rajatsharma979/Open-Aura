@@ -19,7 +19,14 @@ router.get('/home' ,isAuthenticated, (req: Request, res: Response)=>{
 
 router.post('/refresh',authController.postRefreshTokens);
 
-router.get('/auth/google', passport.authenticate('google', {scope: ['email', 'profile']}));
+// router.get('/auth/google', passport.authenticate('google', {scope: ['email', 'profile']}));
+router.get("/auth/google", (req: Request, res: Response, next) => {
+    const redirectUrl = req.query.redirect as string
+    passport.authenticate("google", {
+      scope: ["email", "profile"],
+      state: redirectUrl, // Pass the redirect URL as state
+    })(req, res, next)
+  })
 
 router.post('/logout', authController.logout);
 

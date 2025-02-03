@@ -3,7 +3,9 @@ import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import Event from "./pages/Event"
-// import PrivateRoute from "./components/PrivateRoute"
+import GoogleAuthCallback from "./components/GoogleAuthCallback"
+import PrivateRoute from "./components/PrivateRoute"
+
 export default function App() {
   return (
     <Router>
@@ -13,7 +15,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/event" element={<Event/>}></Route>
+            <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
+            <Route path="/event" element={<PrivateRoute><Event /></PrivateRoute>} />
           </Routes>
         </div>
       </div>
