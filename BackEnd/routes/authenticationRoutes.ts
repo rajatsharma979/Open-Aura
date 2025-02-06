@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { Request, Response } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 const router = Router();
 
@@ -17,7 +19,24 @@ router.post('/isAuthenticated' ,isAuthenticated);
 
 router.post('/refresh',authController.postRefreshTokens);
 
-router.get('/auth/google', passport.authenticate('google', {scope: ['email', 'profile']}));
+router.get('/auth/google', passport.authenticate('google', {scope: ['email', 'profile'], prompt: "select_account"}));
+
+// router.get("/auth/google", (req, res, next) => {
+//     const googleAuthURL = `https://accounts.google.com/o/oauth2/v2/auth`;
+  
+//   const params = new URLSearchParams({
+//     client_id: process.env.GOOGLE_CLIENT_ID!,
+//     redirect_uri: `${process.env.Google_Auth_Callback_Url}`, // Your callback URL
+//     response_type: 'code',
+//     scope: 'profile email',
+//     prompt: 'select_account',  // Force the account selection screen
+//   });
+
+//   const fullAuthURL = `${googleAuthURL}?${params.toString()}`;
+
+//   res.redirect(fullAuthURL);
+//   });
+
 // router.get("/auth/google", (req: Request, res: Response, next) => {
 //     const redirectUrl = req.query.redirect as string
 //     passport.authenticate("google", {
@@ -34,8 +53,6 @@ router.get('/auth/google/callback',
     
         const userWithToken = req.user as { user: userType, accessToken: string, refreshToken: string};
 
-        console.log(userWithToken);
-
         if (!userWithToken || !userWithToken.accessToken || !userWithToken.refreshToken) {
             res.status(401).json({ message: "Authentication failed" });
             return;
@@ -44,17 +61,19 @@ router.get('/auth/google/callback',
             httpOnly: true,
             //secure: true,             // set this true in production as it sends cookie over https only
             sameSite: 'strict',         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
-            maxAge: Number(process.env.Access_Token_Cookie_Expiry)         //15 min in millis
+            //maxAge: Number(process.env.Access_Token_Cookie_Expiry)         //15 min in millis
         });
 
         res.cookie('refreshToken', userWithToken.refreshToken, {
             httpOnly: true,
             //secure: true,             // set this true in production as it sends cookie over https only
             sameSite: 'strict',         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
-            maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)         //15 min in millis
+            //maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)         //15 min in millis
         });
 
-        res.status(200).json({"msg": "successfully registered"});
+        //res.status(200).json({"msg": "successfully registered"});
+
+        res.redirect('http://localhost:5173/event');
         return;
     });
 

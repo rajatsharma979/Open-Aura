@@ -187,14 +187,14 @@ const postRefreshTokens = async (req: Request, res: Response) => {
             httpOnly: true,
             //secure: true,             
             sameSite: 'strict',
-            maxAge: Number(process.env.Access_Token_Cookie_Expiry)
+            //maxAge: Number(process.env.Access_Token_Cookie_Expiry)
         });
 
         res.cookie('refreshToken', newTokens.refreshToken, {
             httpOnly: true,
             //secure: true,            
             sameSite: 'strict',
-            maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)
+            //maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)
         })
 
         user.refreshToken = newTokens.refreshToken;

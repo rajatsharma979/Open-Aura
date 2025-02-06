@@ -62,7 +62,7 @@ passport.use(new GoogleStrategy({
     clientID:     process.env.Google_Client_Id!,
     clientSecret: process.env.Google_Client_Secret!,
     callbackURL: process.env.Google_Auth_Callback_Url!,
-    passReqToCallback   : true
+    passReqToCallback   : true,
   },
   async (req: Request, accessToken: string, refreshToken: string | undefined, profile: Profile, done: VerifyCallback) =>{
 
