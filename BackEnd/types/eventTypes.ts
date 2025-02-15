@@ -1,6 +1,5 @@
 export type eventData = {
     eventHostId: string,
-    eventId: string,
     eventHost: string,
     title: string,
     description: string,
