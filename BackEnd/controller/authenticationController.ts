@@ -90,9 +90,9 @@ const postSignup = async (req: Request, res: Response) => {
         return;
     }
     catch (err) {
-        console.log("Internal server error in registering user")
+        console.log("Internal server error in registering user");
         // implement centrelazed error handling below and in all catch blocks
-        res.status(500).json("");
+        res.status(500).json({'err': 'Error registrting user'});
     }
 }
 
