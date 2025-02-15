@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import authenticationRoutes from './routes/authenticationRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
 import mediasoupRouting from './public/mediasoupRouting.js';
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(cookieParser());
 
 
 app.use(authenticationRoutes);
+app.use(eventRoutes);
 
 mongoose.connect(process.env.Db_Link!)
 .then(()=>{
