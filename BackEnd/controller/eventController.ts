@@ -26,7 +26,7 @@ const postCreateEvent = async (req: Request, res: Response)=>{
             eventHost: eventHost,
             title: title,
             description: description,
-            eventDate: eventDateTime,
+            eventDateTime: eventDateTime,
         });
     
         await event.save();
