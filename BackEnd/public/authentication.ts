@@ -33,6 +33,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction)=> { //
         }
 
         req.user = tokenData;
+        res.status(200).json({"msg": "access granted"});
         next();
     }
     catch(err){
