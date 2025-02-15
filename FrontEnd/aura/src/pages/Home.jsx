@@ -2,6 +2,7 @@ import { motion } from "framer-motion"
 import FloatingPaths from "../components/floatingPath"
 
 
+// eslint-disable-next-line react/prop-types
 const OpenAura = ({ title = "Open Aura" }) => {
   const words = title.split(" ")
 

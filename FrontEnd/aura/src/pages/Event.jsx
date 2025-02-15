@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Calendar, Clock, CheckCircle, Sun, Moon, LogOut, ChevronDown } from "lucide-react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
-
+import { CreateEventForm } from "./CreateEventForm"
 // Sample data for upcoming and past events
 const upcomingEvents = [
   {
@@ -52,34 +52,33 @@ const pastEvents = [
   },
 ]
 
-// Sample data for user-created events
-const myEvents = [
-  {
-    id: "my1",
-    name: "Team Building Workshop",
-    date: "2023-07-05",
-    time: "10:00",
-    image: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: "my2",
-    name: "Product Launch Webinar",
-    date: "2023-07-12",
-    time: "14:00",
-    image: "/placeholder.svg?height=100&width=100",
-  },
-]
+
 
 const EventLandingPage = () => {
   const [showCalendar, setShowCalendar] = useState(false)
   const [eventCode, setEventCode] = useState("")
-  const [eventName, setEventName] = useState("")
   const [selectedDate, setSelectedDate] = useState("")
   const [darkMode, setDarkMode] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [myEvents, setMyEvents] = useState([])
+
   
   const navigate = useNavigate();
 
+  const fetchMyEvents = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/createEvent", { withCredentials: true })
+      if (response.status === 200) {
+        setMyEvents(response.data)
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error)
+    }
+  }
+  
+  const handleEventCreated = () => {
+    fetchMyEvents()
+  }
 
   useEffect(() => {
     if (darkMode) {
@@ -96,7 +95,7 @@ const EventLandingPage = () => {
 
   const handleCreateEvent = (e) => {
     e.preventDefault()
-    console.log("Creating event:", eventName, "on", selectedDate)
+    console.log("Creating event:", "on", selectedDate)
     setShowCalendar(false)
   }
 
@@ -242,25 +241,7 @@ const EventLandingPage = () => {
             </div>
 
             {/* Create Event Block */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-4 dark:text-white">Create an Event</h3>
-              <form onSubmit={handleCreateEvent}>
-                <input
-                  type="text"
-                  placeholder="Event name"
-                  className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
-                  value={eventName}
-                  onChange={(e) => setEventName(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCalendar(true)}
-                  className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 flex items-center justify-center"
-                >
-                  <Calendar className="mr-2" /> Schedule Event
-                </button>
-              </form>
-            </div>
+            <CreateEventForm onEventCreated={handleEventCreated} />
           </div>
 
           {/* Events Section */}
