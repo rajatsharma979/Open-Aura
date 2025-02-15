@@ -22,11 +22,11 @@ const eventSchema = new Schema({
         required: true
     },
     eventDate:{
-        type: Date,
+        type: String,
         required: true
     },
     eventTime:{
-        type: Date,
+        type: String,
         required: true
     }
 });

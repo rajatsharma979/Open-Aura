@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
 
-import Events from "../models/eventsModel";
+import Events from "../models/eventsModel.js";
 import { eventData, userData } from "../types/eventTypes";
 
 const postCreateEvent = async (req: Request, res: Response)=>{
@@ -33,8 +33,8 @@ const postCreateEvent = async (req: Request, res: Response)=>{
         res.status(200).json({'msg': 'Event created successfully'});
         return;
     }
-    catch{
-        console.log("Error creating event");
+    catch(error){
+        console.log("Error creating event", error);
         res.status(500).json({'err': 'Error creating Event'});
     }
 }

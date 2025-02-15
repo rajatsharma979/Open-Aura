@@ -33,7 +33,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction)=> { //
         }
 
         req.user = tokenData;
-        res.status(200).json({"msg": "access granted"});
+        next();
     }
     catch(err){
         console.log("Internal server error while verifying jwt token", err);
