@@ -15,7 +15,7 @@ router.post('/login', dataValidator.validateLoginData, authController.postLogin)
 
 router.post('/signup', dataValidator.validateSignupData, authController.postSignup);
 
-router.get('/isAuthenticated' ,isAuthenticated);
+router.post('/isAuthenticated' ,isAuthenticated);
 
 router.post('/refresh',authController.postRefreshTokens);
 
