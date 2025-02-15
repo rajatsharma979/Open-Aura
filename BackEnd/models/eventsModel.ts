@@ -21,14 +21,10 @@ const eventSchema = new Schema({
         type: String,
         required: true
     },
-    eventDate:{
-        type: String,
+    eventDateTime:{
+        type: Date,
         required: true
     },
-    eventTime:{
-        type: String,
-        required: true
-    }
 });
 
 export default mongoose.model('Events', eventSchema);

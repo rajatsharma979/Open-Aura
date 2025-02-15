@@ -3,8 +3,8 @@ export type eventData = {
     eventHost: string,
     title: string,
     description: string,
-    eventTime: Date,
-    eventDate: Date
+    eventDate: string,
+    eventTime: string
 }
 
 export type userData = {

@@ -17,6 +17,8 @@ const postCreateEvent = async (req: Request, res: Response)=>{
         const description = body.description;
         const eventDate = body.eventDate;
         const eventTime = body.eventTime;
+
+        const eventDateTime = `${eventDate}T${eventTime}:00Z`;
     
         const event = new Events({
             eventHostId: eventHostId,
@@ -24,8 +26,7 @@ const postCreateEvent = async (req: Request, res: Response)=>{
             eventHost: eventHost,
             title: title,
             description: description,
-            eventDate: eventDate,
-            eventTime: eventTime
+            eventDate: eventDateTime,
         });
     
         await event.save();
