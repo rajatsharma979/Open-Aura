@@ -10,6 +10,16 @@ export default function Login() {
   const [errors, setErrors] = useState([])
   const navigate = useNavigate()
 
+  const handleAuthviaGoogle = (e) => {
+    e.preventDefault()
+    setErrors([])
+
+    // Redirect user to the backend's Google OAuth authentication endpoint
+    // Include the frontend redirect URL as a parameter
+    const redirectUrl = encodeURIComponent(`${window.location.origin}/auth/google/callback`)
+    window.location.href = `http://localhost:3000/auth/google?redirect=${redirectUrl}`
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     setErrors([])
@@ -75,9 +85,17 @@ export default function Login() {
             <button
               type="submit"
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-            >
+            onClick={handleSubmit}>
               Sign In
             </button>
+          </div>
+          <div className="text-center">
+            <div
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
+            onClick={handleAuthviaGoogle}
+            >
+              Log in with Google
+            </div>
           </div>
           {errors.length > 0 && (
             <div
