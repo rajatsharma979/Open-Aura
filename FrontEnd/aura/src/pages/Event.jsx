@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Calendar, Clock, CheckCircle, Sun, Moon, LogOut, ChevronDown } from "lucide-react"
+import { Calendar, Clock, CheckCircle, LogOut, ChevronDown } from "lucide-react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { CreateEventForm } from "./CreateEventForm"
@@ -20,7 +20,7 @@ const EventLandingPage = () => {
     axios.get("http://localhost:3000/getEvents", { withCredentials: true })
       .then((response) => {
         console.log("Fetched Events:", response.data);
-        setMyEvents(response.data.myEvents        )
+        setMyEvents(response.data.myEvents)
         setPastEvents(response.data.pastEvents)
         setUpcomingEvents(response.data.upcomingEvents)
         setIsAuthenticated(true);
@@ -60,6 +60,14 @@ const EventLandingPage = () => {
     fetchMyEvents()
   }
 
+  const formatDateTime = (dateTime) => {
+    const dateObj = new Date(dateTime);
+    const date = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
+    const time = dateObj.toISOString().split('T')[1].slice(0, 5); // HH:MM
+    return { date, time };
+  };
+  
+
 
 
   const handleJoinEvent = (e) => {
@@ -78,7 +86,7 @@ const EventLandingPage = () => {
     try {
         const response = await axios.post("http://localhost:3000/logout", {}, { withCredentials: true });
         if (response.status === 200) {
-            console.log("result.data");
+            console.log("Signing Off...");
             navigate("/");
         }
     } catch (error) {
@@ -129,13 +137,6 @@ const EventLandingPage = () => {
                 </button>
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10">
-                    {/* <button
-                      onClick={toggleDarkMode}
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
-                    >
-                      {darkMode ? <Sun className="inline-block mr-2" /> : <Moon className="inline-block mr-2" />}
-                      {darkMode ? "Light Mode" : "Dark Mode"}
-                    </button> */}
                     <button
                       onClick={handleLogout}
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
@@ -153,30 +154,39 @@ const EventLandingPage = () => {
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
           {/* My Events Section */}
-          <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <h2 className="text-3xl font-bold mb-4 dark:text-white">My Events</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {myEvents.length > 0 ? (
-          myEvents.map((event) => (
-            <div key={event._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-              <img src={event.image || "/placeholder.svg"} alt={event.name} className="w-full h-32 object-cover" />
-              <div className="p-4">
-                <h4 className="font-bold text-lg mb-2 dark:text-white">{event.title}</h4>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{event.date} at {event.time}</p>
-                <button
-                  onClick={() => console.log("Manage event:", event.id)}
-                  className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
-                >
-                  Manage Event
-                </button>
+          <div className="min-h-[200px] bg-gray-100 dark:bg-gray-900">
+  <h2 className="text-3xl font-bold mb-4 dark:text-white">My Events</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {myEvents.length > 0 ? (
+      myEvents.map((event) => {
+        // Format the event date and time
+        const { date, time } = formatDateTime(event.eventDateTime);
+
+        return (
+          <div key={event._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+            <img src={event.image || "/placeholder.svg"} alt={event.name} className="w-full h-32 object-cover" />
+            <div className="p-4">
+              <h4 className="font-bold text-lg mb-2 dark:text-white">{event.title}</h4>
+              <div className="text-gray-600 dark:text-gray-400 text-sm mb-2">
+                <span className="mr-4">📅 {date}</span>
+                <span>🕒 {time}</span>
               </div>
+              <button
+                onClick={() => console.log("Manage event:", event.id)}
+                className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
+              >
+                Manage Event
+              </button>
             </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-600 dark:text-gray-300">No events found.</p>
-        )}
-      </div>
-    </div>
+          </div>
+        );
+      })
+    ) : (
+      <p className="text-center text-gray-600 dark:text-gray-300">No events found.</p>
+    )}
+  </div>
+</div>
+
 
           {/* About Section */}
           <section id="about" className="mb-12">
@@ -233,12 +243,12 @@ const EventLandingPage = () => {
                       <h4 className="font-bold text-lg mb-2 dark:text-white">{event.title}</h4>
                       <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-2">
                         <Calendar className="mr-2 h-4 w-4" />
-                        <span className="mr-4">{event.date}</span>
+                        <span className="mr-4">{event.eventDate}</span>
                         <Clock className="mr-2 h-4 w-4" />
-                        <span>{event.time}</span>
+                        <span>{event.eventTime}</span>
                       </div>
                       <button
-                        onClick={() => handleJoinUpcomingEvent(event.id)}
+                        onClick={() => handleJoinUpcomingEvent(event.eventId)}
                         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-sm"
                       >
                         Join Event
@@ -251,31 +261,38 @@ const EventLandingPage = () => {
 
             {/* Past Events */}
             <div>
-              <h3 className="text-2xl font-bold mb-4 dark:text-white">Past Events</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {pastEvents.map((event) => (
-                  <div key={event._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                    <img
-                      src={event.image || "/placeholder.svg"}
-                      className="w-full h-32 object-cover filter grayscale"
-                    />
-                    <div className="p-4">
-                      <h4 className="font-bold text-lg mb-2 dark:text-white">{event.title}</h4>
-                      <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        <span className="mr-4">{event.eventDateTime}</span>
-                        <Clock className="mr-2 h-4 w-4" />
-                        <span>{event.time}</span>
-                      </div>
-                      <div className="mt-2 flex items-center text-green-600 dark:text-green-400 text-sm">
-                        <CheckCircle className="mr-2 h-4 w-4" />
-                        <span>Completed</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+  <h3 className="text-2xl font-bold mb-4 dark:text-white">Past Events</h3>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {pastEvents.map((event) => {
+      const { date, time } = formatDateTime(event.eventDateTime);
+
+      // Missing 'return' statement fixed here
+      return (
+        <div key={event._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+          <img
+            src={event.image || "/placeholder.svg"}
+            className="w-full h-32 object-cover filter grayscale"
+            alt={event.eventHost}
+          />
+          <div className="p-4">
+            <h4 className="font-bold text-lg mb-2 dark:text-white">{event.title}</h4>
+            <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
+              <Calendar className="mr-2 h-4 w-4" />
+              <span className="mr-4">{date}</span>
+              <Clock className="mr-2 h-4 w-4" />
+              <span>{time}</span>
             </div>
+            <div className="mt-2 flex items-center text-green-600 dark:text-green-400 text-sm">
+              <CheckCircle className="mr-2 h-4 w-4" />
+              <span>Completed</span>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
           </section>
 
           {/* Contact Us Section */}
