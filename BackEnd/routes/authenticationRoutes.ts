@@ -7,7 +7,7 @@ const router = Router();
 
 import authController from "../controller/authenticationController.js";
 import dataValidator from "../public/validatingLoginSignupData.js";
-import isAuthenticated from "../public/authentication.js";
+//import isAuthenticated from "../public/authentication.js";
 import passport from "../public/passport.js";
 import { userType } from "../types/authTypes.js";
 
@@ -15,7 +15,7 @@ router.post('/login', dataValidator.validateLoginData, authController.postLogin)
 
 router.post('/signup', dataValidator.validateSignupData, authController.postSignup);
 
-router.post('/isAuthenticated' ,isAuthenticated);
+//router.post('/isAuthenticated' ,isAuthenticated);
 
 router.post('/refresh',authController.postRefreshTokens);
 
@@ -73,7 +73,8 @@ router.get('/auth/google/callback',
 
         //res.status(200).json({"msg": "successfully registered"});
 
-        res.redirect('http://localhost:5173/event');
+        //res.redirect('http://localhost:5173/event');
+        res.redirect('http://localhost:3000/getEvents');
         return;
     });
 
