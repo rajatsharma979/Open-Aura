@@ -3,90 +3,64 @@ import { Calendar, Clock, CheckCircle, Sun, Moon, LogOut, ChevronDown } from "lu
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { CreateEventForm } from "./CreateEventForm"
-// Sample data for upcoming and past events
-const upcomingEvents = [
-  {
-    id: "1",
-    name: "Web Development Workshop",
-    date: "2023-06-15",
-    time: "14:00",
-    image: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: "2",
-    name: "AI in Healthcare Conference",
-    date: "2023-06-20",
-    time: "09:00",
-    image: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: "3",
-    name: "Startup Networking Mixer",
-    date: "2023-06-25",
-    time: "18:00",
-    image: "/placeholder.svg?height=100&width=100",
-  },
-]
-
-const pastEvents = [
-  {
-    id: "4",
-    name: "Data Science Symposium",
-    date: "2023-05-10",
-    time: "10:00",
-    image: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: "5",
-    name: "UX Design Masterclass",
-    date: "2023-05-20",
-    time: "13:00",
-    image: "/placeholder.svg?height=100&width=100",
-  },
-  {
-    id: "6",
-    name: "Blockchain Technology Summit",
-    date: "2023-05-30",
-    time: "09:00",
-    image: "/placeholder.svg?height=100&width=100",
-  },
-]
-
-
 
 const EventLandingPage = () => {
   const [showCalendar, setShowCalendar] = useState(false)
   const [eventCode, setEventCode] = useState("")
   const [selectedDate, setSelectedDate] = useState("")
-  const [darkMode, setDarkMode] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [myEvents, setMyEvents] = useState([])
-
-  
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const [myEvents,setMyEvents] = useState("")
+  const [pastEvents, setPastEvents] = useState("")
+  const [upcomingEvents, setUpcomingEvents]=useState("")
+
+  useEffect(() => {
+    axios.get("http://localhost:3000/getEvents", { withCredentials: true })
+      .then((response) => {
+        console.log("Fetched Events:", response.data);
+        setMyEvents(response.data.myEvents        )
+        setPastEvents(response.data.pastEvents)
+        setUpcomingEvents(response.data.upcomingEvents)
+        setIsAuthenticated(true);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch events:", error);
+        navigate('/');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [navigate]);
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen text-lg">Authenticating...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return null; // Prevent any content from rendering if not authenticated
+  }
+    
 
   const fetchMyEvents = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/createEvent", { withCredentials: true })
+      const response = await axios.get("http://localhost:3000/getEvents", { withCredentials: true });
       if (response.status === 200) {
-        setMyEvents(response.data)
+        console.log("Fetched Events:", response.data.myEvents);
+        setMyEvents(response.data.myEvents);
       }
     } catch (error) {
-      console.error("Error fetching events:", error)
+      console.error("Failed to fetch events:", error.message);
+      alert("Unable to fetch events. Please try again.");
     }
-  }
+  };
+  
   
   const handleEventCreated = () => {
     fetchMyEvents()
   }
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }, [darkMode])
+
 
   const handleJoinEvent = (e) => {
     e.preventDefault()
@@ -99,9 +73,6 @@ const EventLandingPage = () => {
     setShowCalendar(false)
   }
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode)
-  }
 
   const handleLogout = async () => {
     try {
@@ -123,7 +94,7 @@ const EventLandingPage = () => {
   }
 
   return (
-    <div className={`min-h-screen ${darkMode ? "dark" : ""}`}>
+
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
         {/* Header with Logo */}
         <header className="bg-white dark:bg-gray-800 shadow-md">
@@ -158,13 +129,13 @@ const EventLandingPage = () => {
                 </button>
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10">
-                    <button
+                    {/* <button
                       onClick={toggleDarkMode}
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
                     >
                       {darkMode ? <Sun className="inline-block mr-2" /> : <Moon className="inline-block mr-2" />}
                       {darkMode ? "Light Mode" : "Dark Mode"}
-                    </button>
+                    </button> */}
                     <button
                       onClick={handleLogout}
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
@@ -182,31 +153,30 @@ const EventLandingPage = () => {
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
           {/* My Events Section */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-4 dark:text-white">My Events</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {myEvents.map((event) => (
-                <div key={event.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                  <img src={event.image || "/placeholder.svg"} alt={event.name} className="w-full h-32 object-cover" />
-                  <div className="p-4">
-                    <h4 className="font-bold text-lg mb-2 dark:text-white">{event.name}</h4>
-                    <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-2">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      <span className="mr-4">{event.date}</span>
-                      <Clock className="mr-2 h-4 w-4" />
-                      <span>{event.time}</span>
-                    </div>
-                    <button
-                      onClick={() => console.log("Manage event:", event.id)}
-                      className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-sm"
-                    >
-                      Manage Event
-                    </button>
-                  </div>
-                </div>
-              ))}
+          <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      <h2 className="text-3xl font-bold mb-4 dark:text-white">My Events</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {myEvents.length > 0 ? (
+          myEvents.map((event) => (
+            <div key={event._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+              <img src={event.image || "/placeholder.svg"} alt={event.name} className="w-full h-32 object-cover" />
+              <div className="p-4">
+                <h4 className="font-bold text-lg mb-2 dark:text-white">{event.title}</h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{event.date} at {event.time}</p>
+                <button
+                  onClick={() => console.log("Manage event:", event.id)}
+                  className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
+                >
+                  Manage Event
+                </button>
+              </div>
             </div>
-          </section>
+          ))
+        ) : (
+          <p className="text-center text-gray-600 dark:text-gray-300">No events found.</p>
+        )}
+      </div>
+    </div>
 
           {/* About Section */}
           <section id="about" className="mb-12">
@@ -241,7 +211,7 @@ const EventLandingPage = () => {
             </div>
 
             {/* Create Event Block */}
-            <CreateEventForm onEventCreated={handleEventCreated} />
+            {<CreateEventForm onEventCreated={handleEventCreated} /> }
           </div>
 
           {/* Events Section */}
@@ -253,14 +223,14 @@ const EventLandingPage = () => {
               <h3 className="text-2xl font-bold mb-4 dark:text-white">Upcoming Events</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {upcomingEvents.map((event) => (
-                  <div key={event.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                  <div key={event._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
                     <img
                       src={event.image || "/placeholder.svg"}
-                      alt={event.name}
+                      // alt={event.name}
                       className="w-full h-32 object-cover"
                     />
                     <div className="p-4">
-                      <h4 className="font-bold text-lg mb-2 dark:text-white">{event.name}</h4>
+                      <h4 className="font-bold text-lg mb-2 dark:text-white">{event.title}</h4>
                       <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-2">
                         <Calendar className="mr-2 h-4 w-4" />
                         <span className="mr-4">{event.date}</span>
@@ -284,17 +254,16 @@ const EventLandingPage = () => {
               <h3 className="text-2xl font-bold mb-4 dark:text-white">Past Events</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {pastEvents.map((event) => (
-                  <div key={event.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                  <div key={event._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
                     <img
                       src={event.image || "/placeholder.svg"}
-                      alt={event.name}
                       className="w-full h-32 object-cover filter grayscale"
                     />
                     <div className="p-4">
-                      <h4 className="font-bold text-lg mb-2 dark:text-white">{event.name}</h4>
+                      <h4 className="font-bold text-lg mb-2 dark:text-white">{event.title}</h4>
                       <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
                         <Calendar className="mr-2 h-4 w-4" />
-                        <span className="mr-4">{event.date}</span>
+                        <span className="mr-4">{event.eventDateTime}</span>
                         <Clock className="mr-2 h-4 w-4" />
                         <span>{event.time}</span>
                       </div>
@@ -349,7 +318,6 @@ const EventLandingPage = () => {
           </div>
         )}
       </div>
-    </div>
   )
 }
 

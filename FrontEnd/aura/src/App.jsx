@@ -3,7 +3,6 @@ import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import Event from "./pages/Event"
-import PrivateRoute from "./components/PrivateRoute"
 
 export default function App() {
   return (
@@ -14,7 +13,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/event" element={<PrivateRoute><Event /></PrivateRoute>} />
+            <Route path ="/event" element={<Event/>}></Route>
           </Routes>
         </div>
       </div>

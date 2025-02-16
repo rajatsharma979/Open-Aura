@@ -73,8 +73,8 @@ router.get('/auth/google/callback',
 
         //res.status(200).json({"msg": "successfully registered"});
 
-        //res.redirect('http://localhost:5173/event');
-        res.redirect('http://localhost:3000/getEvents');
+        res.redirect('http://localhost:5173/event');
+        // res.redirect('http://localhost:3000/getEvents');
         return;
     });
 

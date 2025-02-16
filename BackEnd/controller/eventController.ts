@@ -62,6 +62,7 @@ const postCreateEvent = async (req: Request, res: Response)=>{
         const eventDate = body.eventDate;
         const eventTime = body.eventTime;
 
+
         const evtDateTime = `${eventDate}T${eventTime}:00Z`;
 
         const eventDateTime = new Date(evtDateTime);
