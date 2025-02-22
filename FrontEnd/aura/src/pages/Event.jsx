@@ -134,7 +134,7 @@ const EventLandingPage = () => {
         // Redirecting
       }else{
         console.error("Failed to broadcast")
-      }x
+      }
 
     } catch (error) {
       console.log(error);
