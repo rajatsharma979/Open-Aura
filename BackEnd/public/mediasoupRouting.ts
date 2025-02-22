@@ -59,9 +59,9 @@ const mediasoupFunctioning = (server: http.Server, roomId: string)=>{
         socket.on("startBroadcast", async (callback) => {
             try {
 
-                if (rooms.has(roomId)) {
-                    console.error(`❌ Room ${roomId} already exists`);
-                    return callback({ error: "Room already exists" });
+                if (!rooms.has(roomId)) {
+                    console.error(`❌No Room ${roomId} exists`);
+                    return callback({ error: "No Room exists" });
                 }
 
                 // const router = await worker.createRouter({
