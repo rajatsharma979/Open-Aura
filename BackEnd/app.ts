@@ -10,6 +10,7 @@ dotenv.config();
 import authenticationRoutes from './routes/authenticationRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import mediasoupRouting from './public/mediasoupRouting.js';
+import mediasoupFunction from './routes/mediasoupCreation.js';
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(cors({
 }));
 
 const server = http.createServer(app);
-mediasoupRouting(server);
+//mediasoupRouting(server);
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
@@ -28,6 +29,7 @@ app.use(cookieParser());
 
 app.use(authenticationRoutes);
 app.use(eventRoutes);
+app.use('/startEvent', mediasoupFunction(server));
 
 mongoose.connect(process.env.Db_Link!)
 .then(()=>{

@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
+import http from 'http';
 import crypto from "crypto";
 
 import Events from "../models/eventsModel.js";
 import { eventData, fetchedEvent, userData } from "../types/eventTypes";
+import mediasoupCreation from "../public/mediasoupRouting.js";
 
 const fetchEvents = async (userId: string)=>{
 
@@ -96,7 +98,13 @@ const postCreateEvent = async (req: Request, res: Response)=>{
     }
 }
 
+const startBroadcasting = async(req: Request, res: Response, server: http.Server)=>{
+    console.log('Event id in startBroadcastisng ', req.body.eventId);
+    mediasoupCreation(server, req.body.eventId);
+}
+
 export default {
     getEvents,
-    postCreateEvent
+    postCreateEvent,
+    startBroadcasting
 }
