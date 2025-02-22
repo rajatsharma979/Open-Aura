@@ -8,8 +8,8 @@ const router = Router();
 
 const mediasoupFunction = (server: http.Server)=>{
 
-    router.post('/startBroadcasting', isAuthenticated, async (req: Request, res: Response)=>{
-        await eventController.startBroadcasting(req, res, server);
+    router.post('/startBroadcasting', isAuthenticated, (req: Request, res: Response)=>{
+         eventController.startBroadcasting(req, res, server);
     });
 
     return router;

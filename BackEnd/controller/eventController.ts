@@ -98,7 +98,7 @@ const postCreateEvent = async (req: Request, res: Response)=>{
     }
 }
 
-const startBroadcasting = async(req: Request, res: Response, server: http.Server)=>{
+const startBroadcasting = (req: Request, res: Response, server: http.Server)=>{
     console.log('Event id in startBroadcastisng ', req.body.eventId);
     mediasoupCreation(server, req.body.eventId);
 }
