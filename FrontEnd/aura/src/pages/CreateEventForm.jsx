@@ -52,7 +52,7 @@ export function CreateEventForm({ onEventCreated }) {
 
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-      <h3 className="text-2xl font-bold mb-4 dark:text-white">Create an Event</h3>
+      <h3 className="text-4xl font-bold mb-6 bg-gradient-to-r from-[#e2a1a2] to-[#A01959] bg-clip-text text-transparent">Create an Event</h3>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -98,7 +98,7 @@ export function CreateEventForm({ onEventCreated }) {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+          className="w-full bg-gradient-to-r from-[#A04142] to-[#A01959] text-white py-3 rounded-lg hover:scale-105 transition-all duration-300 font-medium shadow-md hover:shadow-xl dark:from-[#151E3E] dark:to-[#1E2B4A] dark:hover:from-[#A04142] dark:hover:to-[#A01959]"
         >
           Create Event
         </button>
