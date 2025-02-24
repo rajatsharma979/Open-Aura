@@ -93,52 +93,44 @@ const EventLandingPage = () => {
     }
   }
 
-  const startBroadcast = async(event_id) => {
+  const startBroadcast = async (eventId) => {
     try {
-      const response = await fetch("http://localhost:3000/startEvent/startBroadcasting",
-        {
-          method:"POST",
-          headers:{
-            "Content-type":"application/json",
-          },
-          body:JSON.stringify({event_id})
-        }
-      );
-      const data = await response.json();
-      if(response.ok){
-        console.log("Broadcast Started Successfully",data);
-        // Redirecting
-      }else{
-        console.error("Failed to broadcast")
-      }
-      
+
+      fetch("http://localhost:3000/startEvent/startBroadcasting", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ eventId }),
+      }).catch(error => console.error("❌ Fetch error:", error));
+
+      navigate('/liveStream');
+
     } catch (error) {
       console.log(error);
-      
     }
 
   }
 
-  const joinBroadcast = async(join_id)=>{
+  const joinBroadcast = async (eventId) => {
+
     try {
-      const response = await fetch("http://localhost:3000/joinBroadcast",{
-        method:"POST",
-        headers: {
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({join_id})
-      });
-      const data = await response.json();
-      if(response.ok){
-        console.log("Broadcast Started Successfully",data);
-        // Redirecting
-      }else{
-        console.error("Failed to broadcast")
-      }
+
+      navigate('/joinLiveStream' ,{ state: { eventId: eventId } } );
+
+      // fetch("http://localhost:3000/joinEvent/joinBroadcasting", {
+      //   method: "POST",
+      //   credentials: "include",
+      //   headers: { "Content-type": "application/json" },
+      //   body: JSON.stringify({ eventId }),
+      // }).catch(error => console.error("❌ Fetch error:", error));
+
+      // setTimeout(()=>{
+      //   navigate('/joinLiveStream');
+      // }, 1000);
 
     } catch (error) {
       console.log(error);
-      
+
     }
   }
 
@@ -225,7 +217,7 @@ const EventLandingPage = () => {
                         <span>🕒 {time}</span>
                       </div>
                       <button
-                        onClick={() =>startBroadcast(event_id) }
+                        onClick={() => startBroadcast(event_id)}
                         className="w-full bg-gradient-to-r from-[#A04142] to-[#A01959] text-white py-3 rounded-lg hover:scale-105 transition-all duration-300 font-medium shadow-md hover:shadow-xl dark:from-[#151E3E] dark:to-[#1E2B4A] dark:hover:from-[#A04142] dark:hover:to-[#A01959]"
                       >
                         Start Broadcast
@@ -292,7 +284,7 @@ const EventLandingPage = () => {
                   const { date, time } = formatDateTime(event.eventDateTime)
                   const join_id = event.eventId
                   console.log(join_id);
-                  
+
 
                   return (
                     <div

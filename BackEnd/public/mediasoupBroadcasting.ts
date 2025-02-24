@@ -1,4 +1,5 @@
 import http from "http";
+import { Request, Response } from "express";
 import {Server} from "socket.io";
 import mediasoup from "mediasoup";
 import { Worker, Router, Producer, Consumer, WebRtcTransport } from "mediasoup/node/lib/types";
@@ -28,16 +29,9 @@ import { Worker, Router, Producer, Consumer, WebRtcTransport } from "mediasoup/n
 //     transportId: string;
 // };
 
-const mediasoupFunctioning = (server: http.Server, roomId: string)=>{
+const mediasoupFunctioning = async (req: Request, res: Response, io: Server, worker: Worker,roomId: string)=>{
 
-    const io = new Server(server, {
-        cors: {
-            origin: "http://localhost:5173",
-            credentials: true,
-            methods: ["GET", "POST"]
-        }
-    });
-    let worker: Worker, router: Router;
+    let router: Router;
 
     (async () => {
         worker = await mediasoup.createWorker();
@@ -50,18 +44,34 @@ const mediasoupFunctioning = (server: http.Server, roomId: string)=>{
         });
         console.log("Mediasoup router created.");
     })();
-    
+
+    console.log("==========Inside mediasoup functioning==============");
     const rooms = new Map();
     
     io.on('connection', async (socket) => {
+        
         console.log('New client connected:', socket.id);
+        
+        console.log('before emitting startBroadcasting');
+
+        socket.on('startBroadcastStreaming', ()=>{
+            console.log('Inside startBroadcasting');
+            socket.emit('startBroadcasting');
+        });
+
+        console.log('after emitting startBroadcasting');
+
+        socket.on('joinBroadcastStreaming', (data)=>{
+            console.log('inside join broadcast streaming', data, data.eventId);
+            socket.emit('joinBroadcasting', {roomId: data.eventId});
+        })
 
         socket.on("startBroadcast", async (callback) => {
             try {
 
-                if (!rooms.has(roomId)) {
-                    console.error(`❌No Room ${roomId} exists`);
-                    return callback({ error: "No Room exists" });
+                if (rooms.has(roomId)) {
+                    console.error(`❌Room ${roomId} already exists`);
+                    return callback({ error: "Room already exists" });
                 }
 
                 // const router = await worker.createRouter({
@@ -91,8 +101,8 @@ const mediasoupFunctioning = (server: http.Server, roomId: string)=>{
 
                 callback({ roomId });
             } catch (error) {
-                console.error("❌ Error creating room:", error);
-                callback({ error: "Failed to create room" });
+                console.error("❌ Error starting broadcasting:", error);
+                callback({ error: "Failed to start broadcast" });
             }
         });
     
@@ -103,6 +113,10 @@ const mediasoupFunctioning = (server: http.Server, roomId: string)=>{
 
         socket.on('joinRoom', async ({ roomId }, callback) => {
             try {
+
+                console.log('Inside join room with roomId', roomId);
+                console.log(rooms);
+
                 const room = rooms.get(roomId);
                 if (!room) {
                     console.error(`❌ Room ${roomId} not found`);
@@ -151,8 +165,8 @@ const mediasoupFunctioning = (server: http.Server, roomId: string)=>{
             try {
                 const room = rooms.get(roomId);
                 if (!room) {
-                    console.error(`❌ Room ${roomId} not found`);
-                    return callback({ error: 'Room not found' });
+                    console.error(`❌ Room ${roomId} not found in create transport`);
+                    return callback({ error: 'Room not found in create transport' });
                 }
 
                 console.log(`🛠 Creating ${isProducer ? 'send' : 'recv'} transport for room ${roomId}...`);
@@ -197,8 +211,8 @@ const mediasoupFunctioning = (server: http.Server, roomId: string)=>{
 
                 const room = rooms.get(roomId);
                 if (!room) {
-                    console.error(`❌ Room ${roomId} not found`);
-                    return callback({ error: 'Room not found' });
+                    console.error(`❌ Room ${roomId} not found in connect Transport`);
+                    return callback({ error: 'Room not found in connect transport' });
                 }
 
                 const transport = [...room.broadcasters.values(), ...room.viewers.values()].find(t => t.id === transportId);
@@ -222,8 +236,8 @@ const mediasoupFunctioning = (server: http.Server, roomId: string)=>{
             try {
                 const room = rooms.get(roomId);
                 if (!room) {
-                    console.error(`❌ Room ${roomId} not found`);
-                    return callback({ error: 'Room not found' });
+                    console.error(`❌ Room ${roomId} not found in produce transport`);
+                    return callback({ error: 'Room not found in produce transport' });
                 }
         
                 const transport = [...room.broadcasters.values()].find(t => t.id === transportId);

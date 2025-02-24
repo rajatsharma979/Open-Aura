@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import http from 'http';
 import crypto from "crypto";
+import { Server} from "socket.io";
+import { Worker } from "mediasoup/node/lib/types";
 
 import Events from "../models/eventsModel.js";
 import { eventData, fetchedEvent, userData } from "../types/eventTypes";
-import mediasoupCreation from "../public/mediasoupRouting.js";
+import mediasoupStartCreation from "../public/mediasoupBroadcasting.js";
 
 const fetchEvents = async (userId: string)=>{
 
@@ -98,13 +100,13 @@ const postCreateEvent = async (req: Request, res: Response)=>{
     }
 }
 
-const startBroadcasting = (req: Request, res: Response, server: http.Server)=>{
+const startBroadcasting = (req: Request, res: Response, server: Server, worker: Worker)=>{
     console.log('Event id in startBroadcastisng ', req.body.eventId);
-    mediasoupCreation(server, req.body.eventId);
+    mediasoupStartCreation(req, res, server, worker, req.body.eventId);
 }
 
 export default {
     getEvents,
     postCreateEvent,
-    startBroadcasting
+    startBroadcasting,
 }
