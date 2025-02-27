@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import * as mediasoupClient from "mediasoup-client";
 import { useLocation } from "react-router-dom";
+import { Mic, Volume2, Video, X } from "lucide-react"
+
 
 const VideoStreamingApp = () => {
     let [device, setDevice] = useState(null);
@@ -11,6 +13,11 @@ const VideoStreamingApp = () => {
     const [existingProducers, setExistingProducers] = useState([]);
     const socketRef = useRef(null);
     const myVideoRef = useRef(null);
+
+    
+  const [isMuted, setIsMuted] = useState(false)
+  const [isSpeakerOn, setIsSpeakerOn] = useState(true)
+  const [isCameraOn, setIsCameraOn] = useState(true)
 
     const location = useLocation();
     const eventId = location.state?.eventId;
@@ -102,92 +109,92 @@ const VideoStreamingApp = () => {
         });
     };
 
-    // 🎥 Start Broadcasting Media
-    async function startBroadcast() {
+    // // 🎥 Start Broadcasting Media
+    // async function startBroadcast() {
 
-        try {
-            // Step 1: Emit "startBroadcasting" to create a room
-            const response = await new Promise((resolve, reject) => {
-                socketRef.current.emit("startBroadcast", (response) => {
-                    if (response.error) {
-                        console.error("❌ Error starting broadcast:", response.error);
-                        reject(response.error);
-                    } else {
-                        console.log('🏠 Broadcasting started! Room ID: ${response.roomId}');
-                        setCurrentRoomId(response.roomId);
-                        resolve(response);
-                    }
-                });
-            });
+    //     try {
+    //         // Step 1: Emit "startBroadcasting" to create a room
+    //         const response = await new Promise((resolve, reject) => {
+    //             socketRef.current.emit("startBroadcast", (response) => {
+    //                 if (response.error) {
+    //                     console.error("❌ Error starting broadcast:", response.error);
+    //                     reject(response.error);
+    //                 } else {
+    //                     console.log('🏠 Broadcasting started! Room ID: ${response.roomId}');
+    //                     setCurrentRoomId(response.roomId);
+    //                     resolve(response);
+    //                 }
+    //             });
+    //         });
 
-            console.log(response.roomId);
+    //         console.log(response.roomId);
 
-            // Step 2: Initialize router capabilities for the room
-            await getRouterCapabilities(response.roomId);
+    //         // Step 2: Initialize router capabilities for the room
+    //         await getRouterCapabilities(response.roomId);
 
-            // if (!device) {
-            //     console.error("❌ Device not initialized");
-            //     return;
-            // }
+    //         // if (!device) {
+    //         //     console.error("❌ Device not initialized");
+    //         //     return;
+    //         // }
 
-            // Step 3: Get user media (audio and video)
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            if (myVideoRef.current) {
-                myVideoRef.current.srcObject = stream;
-            }
+    //         // Step 3: Get user media (audio and video)
+    //         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    //         if (myVideoRef.current) {
+    //             myVideoRef.current.srcObject = stream;
+    //         }
 
-            // Step 4: Create a send transport
-            console.log("🎥 Requesting send transport creation...");
-            const transportParams = await new Promise((resolve, reject) => {
-                socketRef.current.emit("createTransport", { roomId: response.roomId, isProducer: true }, (response) => {
-                    if (!response || !response.id) {
-                        console.error("❌ Invalid transport parameters received");
-                        reject("Invalid transport parameters");
-                    } else {
-                        resolve(response);
-                    }
-                });
-            });
+    //         // Step 4: Create a send transport
+    //         console.log("🎥 Requesting send transport creation...");
+    //         const transportParams = await new Promise((resolve, reject) => {
+    //             socketRef.current.emit("createTransport", { roomId: response.roomId, isProducer: true }, (response) => {
+    //                 if (!response || !response.id) {
+    //                     console.error("❌ Invalid transport parameters received");
+    //                     reject("Invalid transport parameters");
+    //                 } else {
+    //                     resolve(response);
+    //                 }
+    //             });
+    //         });
 
-            console.log("🚀 Send Transport params received:", transportParams);
-            const newSendTransport = device.createSendTransport(transportParams);
-            setSendTransport(newSendTransport);
+    //         console.log("🚀 Send Transport params received:", transportParams);
+    //         const newSendTransport = device.createSendTransport(transportParams);
+    //         setSendTransport(newSendTransport);
 
-            // Step 5: Set up transport event listeners
-            newSendTransport.on("connect", ({ dtlsParameters }, callback, errback) => {
-                console.log("🔗 Connecting send transport...");
-                socketRef.current.emit("connectTransport", { roomId: response.roomId, transportId: newSendTransport.id, dtlsParameters }, (response) => {
-                    if (response.error) {
-                        console.error("❌ Error connecting transport:", response.error);
-                        errback(response.error);
-                    } else {
-                        console.log("✅ Send transport connected!");
-                        callback();
-                    }
-                });
-            });
+    //         // Step 5: Set up transport event listeners
+    //         newSendTransport.on("connect", ({ dtlsParameters }, callback, errback) => {
+    //             console.log("🔗 Connecting send transport...");
+    //             socketRef.current.emit("connectTransport", { roomId: response.roomId, transportId: newSendTransport.id, dtlsParameters }, (response) => {
+    //                 if (response.error) {
+    //                     console.error("❌ Error connecting transport:", response.error);
+    //                     errback(response.error);
+    //                 } else {
+    //                     console.log("✅ Send transport connected!");
+    //                     callback();
+    //                 }
+    //             });
+    //         });
 
-            newSendTransport.on("produce", async ({ kind, rtpParameters }, callback, errback) => {
-                console.log('🎙 Producing ${kind} track...');
-                socketRef.current.emit("produce", { roomId: response.roomId, transportId: newSendTransport.id, kind, rtpParameters }, (response) => {
-                    if (response.error) {
-                        errback(response.error);
-                    } else {
-                        callback({ id: response.producerId });
-                    }
-                });
-            });
+    //         newSendTransport.on("produce", async ({ kind, rtpParameters }, callback, errback) => {
+    //             console.log('🎙 Producing ${kind} track...');
+    //             socketRef.current.emit("produce", { roomId: response.roomId, transportId: newSendTransport.id, kind, rtpParameters }, (response) => {
+    //                 if (response.error) {
+    //                     errback(response.error);
+    //                 } else {
+    //                     callback({ id: response.producerId });
+    //                 }
+    //             });
+    //         });
 
-            // Step 6: Produce each track (audio and video)
-            for (const track of stream.getTracks()) {
-                await newSendTransport.produce({ track });
-            }
+    //         // Step 6: Produce each track (audio and video)
+    //         for (const track of stream.getTracks()) {
+    //             await newSendTransport.produce({ track });
+    //         }
 
-            console.log("✅ Broadcasting started");
-        } catch (error) {
-            console.error("❌ Error in startBroadcast:", error);
-        }
-    };
+    //         console.log("✅ Broadcasting started");
+    //     } catch (error) {
+    //         console.error("❌ Error in startBroadcast:", error);
+    //     }
+    // };
 
     // 👀 Join an Event as Viewer
     async function joinEvent (roomId) {
@@ -225,7 +232,7 @@ const VideoStreamingApp = () => {
 
             // 🔹 Listen for new producers
             socketRef.current.on("newProducer", async ({ producerId, kind }) => {
-                console.log('🎥 [NEW PRODUCER RECEIVED] ID: ${producerId}, Kind: ${kind}');
+                console.log(`🎥 [NEW PRODUCER RECEIVED] ID: ${producerId}, Kind: ${kind}`);
                 await consumeStream(roomId, producerId);
             });
 
@@ -241,73 +248,174 @@ const VideoStreamingApp = () => {
 
     // 🔥 Consume a Producer's Stream
     const consumeStream = async (roomId, producerId) => {
-        if (!recvTransport) {
-            console.error("❌ Receive transport not initialized");
-            return;
-        }
+      if (!recvTransport) {
+          console.error("❌ Receive transport not initialized");
+          return;
+      }
+  
+      console.log(`📡 Requesting to consume producer: ${producerId}`);
+  
+      socketRef.current.emit(
+          "consume",
+          {
+              roomId,
+              producerId,
+              rtpCapabilities: device.rtpCapabilities,
+              transportId: recvTransport.id,
+          },
+          async (response) => {
+              if (response.error) {
+                  console.error("❌ Error consuming stream:", response.error);
+                  return;
+              }
+  
+              console.log("✅ Consuming stream response received:", response);
+  
+              try {
+                  const consumer = await recvTransport.consume({
+                      id: response.id,
+                      producerId: response.producerId,
+                      kind: response.kind,
+                      rtpParameters: response.rtpParameters,
+                  });
+  
+                  console.log(`✅ Successfully consumed ${response.kind} stream`);
+  
+                  // 🎥 Video Handling
+                  if (response.kind === "video" && myVideoRef.current) {
+                      const videoStream = new MediaStream();
+                      videoStream.addTrack(consumer.track); // Add the video track
+  
+                      myVideoRef.current.srcObject = videoStream;
+                  }
+  
+                  // 🔊 Audio Handling (Use separate <audio> element)
+                  if (response.kind === "audio") {
+                      const audioElement = new Audio();
+                      const audioStream = new MediaStream();
+                      audioStream.addTrack(consumer.track); // Add the audio track
+  
+                      audioElement.srcObject = audioStream;
+                      audioElement.autoplay = true;
+                      audioElement.controls = false;
+                      audioElement.muted = false; // Ensure it's not muted
+                      document.body.appendChild(audioElement);
+                  }
+  
+                  console.log(`✅ ${response.kind} stream attached to DOM`);
+              } catch (error) {
+                  console.error("❌ Error consuming stream:", error);
+              }
+          }
+      );
+  };
+  
+  // purana hai
+//   const consumeStream = async (roomId, producerId) => {
+//     if (!recvTransport) {
+//         console.error("❌ Receive transport not initialized");
+//         return;
+//     }
 
-        console.log('📡 Requesting to consume producer: ${producerId}');
+//     console.log('📡 Requesting to consume producer: ${producerId}');
 
-        socketRef.current.emit("consume", { roomId, producerId, rtpCapabilities: device.rtpCapabilities, transportId: recvTransport.id }, async (response) => {
-            if (response.error) {
-                console.error("❌ Error consuming stream:", response.error);
-                return;
-            }
+//     socketRef.current.emit("consume", { roomId, producerId, rtpCapabilities: device.rtpCapabilities, transportId: recvTransport.id }, async (response) => {
+//         if (response.error) {
+//             console.error("❌ Error consuming stream:", response.error);
+//             return;
+//         }
 
-            console.log("✅ Consuming stream response received:", response);
+//         console.log("✅ Consuming stream response received:", response);
 
-            try {
-                const consumer = await recvTransport.consume({
-                    id: response.id,
-                    producerId: response.producerId,
-                    kind: response.kind,
-                    rtpParameters: response.rtpParameters,
-                });
+//         try {
+//             const consumer = await recvTransport.consume({
+//                 id: response.id,
+//                 producerId: response.producerId,
+//                 kind: response.kind,
+//                 rtpParameters: response.rtpParameters,
+//             });
 
-                console.log('✅ Successfully consumed ${response.kind} stream');
+//             console.log(`✅ Successfully consumed ${response.kind} stream`);
 
-                // Create a media element for the stream
-                const mediaElement = document.createElement(response.kind === "video" ? "video" : "audio");
-                mediaElement.autoplay = true;
-                mediaElement.playsInline = true;
-                mediaElement.srcObject = new MediaStream([consumer.track]);
-                document.body.appendChild(mediaElement);
+//             // Create a media element for the stream
+//             const mediaElement = document.createElement(response.kind === "video" ? "video" : "audio");
+//             mediaElement.autoplay = true;
+//             mediaElement.playsInline = true;
+//             mediaElement.srcObject = new MediaStream([consumer.track]);
+//             document.body.appendChild(mediaElement);
+//             console.log(`✅ ${response.kind} stream attached to DOM`);
+//         } catch (error) {
+//             console.error("❌ Error consuming stream:", error);
+//         }
+//     });
+// };
 
-                console.log('✅ ${response.kind} stream attached to DOM');
-            } catch (error) {
-                console.error("❌ Error consuming stream:", error);
-            }
-        });
-    };
+    
 
+    const toggleMicrophone = () => {
+        setIsMuted(!isMuted)
+        // Implement microphone muting logic here
+        
+      }
+    
+      const toggleSpeaker = () => {
+        setIsSpeakerOn(!isSpeakerOn)
+        // Implement speaker toggling logic here
+      }
+    
+      const toggleCamera = () => {
+        setIsCameraOn(!isCameraOn)
+        // Implement camera toggling logic here
+      }
+
+      const endBroadcast = () => {
+        // Implement logic to end the broadcast
+        window.location.href = "/event"
+      }
     return (
-        <div>
-            <h1>Video Streaming App</h1>
-            <div>
-                <video ref={myVideoRef} autoPlay playsInline muted />
-            </div>
-            <div>
-                <button onClick={startBroadcast}>Start Broadcast</button>
-                <button
-                    onClick={async () => {
-                        const roomId = prompt("Enter Room ID:");
-                        if (roomId) await joinEvent(roomId);
-                    }}
-                >
-                    Join Event
-                </button>
-            </div>
-            <div>
-                <h3>Existing Producers:</h3>
-                <ul>
-                    {existingProducers.map((producer) => (
-                        <li key={producer.producerId}>
-                            {producer.kind} - {producer.producerId}
-                        </li>
-                    ))}
-                </ul>
-            </div>
+<div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-200 py-12">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <h1 className="text-4xl font-bold text-center mb-8 text-rose-800">OPEN-AURA</h1>
+        <div className="flex justify-center mb-8">
+          <div className="w-full max-w-4xl aspect-video bg-rose-900 rounded-2xl overflow-hidden shadow-lg">
+            <video ref={myVideoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+          </div>
         </div>
+        <div className="flex justify-center gap-6 mt-6">
+          <button
+            onClick={toggleMicrophone}
+            className={`p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out ${
+              isMuted ? "bg-rose-300 text-rose-800" : "bg-rose-800 text-rose-100"
+            } hover:bg-rose-700 hover:text-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-50`}
+          >
+            <Mic className="w-6 h-6" />
+          </button>
+          <button
+            onClick={toggleSpeaker}
+            className={`p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out ${
+              isSpeakerOn ? "bg-rose-800 text-rose-100" : "bg-rose-300 text-rose-800"
+            } hover:bg-rose-700 hover:text-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-50`}
+          >
+            <Volume2 className="w-6 h-6" />
+          </button>
+          <button
+            onClick={toggleCamera}
+            className={`p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out ${
+              isCameraOn ? "bg-rose-800 text-rose-100" : "bg-rose-300 text-rose-800"
+            } hover:bg-rose-700 hover:text-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-50`}
+          >
+            <Video className="w-6 h-6" />
+          </button>
+          <button
+            onClick={endBroadcast}
+            className="p-4 bg-red-600 text-white rounded-full shadow-lg transition-all duration-300 ease-in-out hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+      </div>
+    </div>
     );
 };
 

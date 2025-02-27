@@ -49,7 +49,7 @@ const EventLandingPage = () => {
     try {
       const response = await axios.get("http://localhost:3000/getEvents", { withCredentials: true })
       if (response.status === 200) {
-        console.log("Fetched Events:", response.data.myEvents)
+        // console.log("Fetched Events:", response.data.myEvents)
         setMyEvents(response.data.myEvents)
       }
     } catch (error) {
