@@ -63,6 +63,7 @@ const postCreateEvent = async (req: Request, res: Response)=>{
         const eventId = crypto.randomUUID();
         const title = body.title;
         const description = body.description;
+        const thumbnail = req.file;
         const eventDate = body.eventDate;
         const eventTime = body.eventTime;
 
@@ -76,6 +77,7 @@ const postCreateEvent = async (req: Request, res: Response)=>{
             eventId: eventId,
             eventHost: eventHost,
             title: title,
+            thumbnail: thumbnail,
             description: description,
             eventDateTime: eventDateTime,
         });
@@ -87,6 +89,7 @@ const postCreateEvent = async (req: Request, res: Response)=>{
             eventHost: eventHost,
             title: title,
             description: description,
+            thumbnail: thumbnail,
             eventDate: eventDate,
             eventTime: eventTime
         }

@@ -21,6 +21,10 @@ const eventSchema = new Schema({
         type: String,
         required: true
     },
+    thumbnail:{
+        type: String,
+        required: true
+    },
     eventDateTime:{
         type: Date,
         required: true
