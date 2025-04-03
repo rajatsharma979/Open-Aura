@@ -197,6 +197,7 @@ const EventLandingPage = () => {
             {myEvents.length > 0 ? (
               myEvents.map((event) => {
                 // Format the event date and time
+                console.log("image path", event.thumbnail);
                 const { date, time } = formatDateTime(event.eventDateTime)
                 const event_id = event.eventId
                 console.log(event_id);
@@ -206,7 +207,7 @@ const EventLandingPage = () => {
                     className="bg-white/80 dark:bg-[#9ab2ec] rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden backdrop-blur-sm border border-rose-100 dark:border-gray-700"
                   >
                     <img
-                      src={event.image || "/placeholder.svg"}
+                      src={`http://localhost:3000${event.thumbnail}`}
                       alt={event.name}
                       className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                     />
@@ -292,7 +293,7 @@ const EventLandingPage = () => {
                       className="bg-black/80 dark:bg-[#9ab2ec] rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden backdrop-blur-sm border border-rose-100 dark:border-gray-700"
                     >
                       <img
-                        src={event.image || "/placeholder.svg"}
+                        src={`http://localhost:3000${event.thumbnail}`}
                         alt={event.name}
                         className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                       />
@@ -334,9 +335,9 @@ const EventLandingPage = () => {
                     className="bg-black/80 dark:bg-[#9ab2ec] rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden backdrop-blur-sm border border-rose-100 dark:border-gray-700"
                   >
                     <img
-                      src={event.image || "/placeholder.svg"}
+                      src={`http://localhost:3000${event.thumbnail}`}
+                      alt={event.name}
                       className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                      alt={event.eventHost}
                     />
                     <div className="p-4">
                       <h4 className="font-bold text-lg mb-2 dark:text-[#A04142]">{event.title}</h4>

@@ -7,6 +7,7 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import path from "path";
+import { fileURLToPath } from "url";
 import mediasoup from 'mediasoup';
 import { Worker } from "mediasoup/node/lib/types";
 import dotenv from "dotenv";
@@ -16,6 +17,8 @@ import authenticationRoutes from './routes/authenticationRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import { mediasoupStartFunction } from './routes/mediasoupCreation.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -47,34 +50,15 @@ let worker;
 
 //mediasoupRouting(server);
 
-const thumbnailStorage = multer.diskStorage({
-    destination: (req, file, cb)=>{
-            const uploadPath = path.join(__dirname,'thumbnails');
-            console.log(uploadPath);
-            cb(null, 'thumbnails');
-        },
-        filename: (req, file, cb)=>{
-            cb(null, Date.now() + file.originalname);
-        }
-});
 
-const fileFilter = (req: Request, file: Express.Multer.File, cb: any)=>{
-    if(file.mimetype === 'image/png' ||
-        file.mimetype === 'image/jpg' || 
-        file.mimetype === 'image/jpeg'){
-            cb(null ,true);
-        }
-    else{
-        cb(null, false);
-    }
-}
+
+console.log(__dirname);
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cookieParser());
-app.use(multer({storage: thumbnailStorage, fileFilter: fileFilter}).single('imgurl'));
 
-app.use('/thumbnails', express.static(path.join(__dirname, 'thumbnails')));
+app.use('/thumbnails', express.static(path.join(__dirname, '../', 'thumbnails')));
 
 app.use(authenticationRoutes);
 app.use(eventRoutes);

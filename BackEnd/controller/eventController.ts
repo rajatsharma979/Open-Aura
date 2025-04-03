@@ -58,12 +58,14 @@ const postCreateEvent = async (req: Request, res: Response)=>{
         const body = req.body as eventData;
         const user = req.user as userData; 
 
+        console.log('kolo',req.file);
+
         const eventHostId = user.id;
         const eventHost = user.name;
         const eventId = crypto.randomUUID();
         const title = body.title;
         const description = body.description;
-        const thumbnail = req.file;
+        const thumbnail = `/thumbnails/${req.file!.filename}`;
         const eventDate = body.eventDate;
         const eventTime = body.eventTime;
 

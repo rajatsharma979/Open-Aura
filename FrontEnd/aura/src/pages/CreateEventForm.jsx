@@ -4,40 +4,41 @@ import { useState } from "react";
 import { Calendar, Clock } from "lucide-react";
 import axios from "axios";
 
-
 export function CreateEventForm({ onEventCreated }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
+  const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Create FormData object to send the image and event details
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("eventDate", eventDate);
+    formData.append("eventTime", eventTime);
+    if (image) {
+      formData.append("image", image);
+    }
+
     try {
-      const response = await axios.post(
-        "http://localhost:3000/createEvent",
-        {
-          title,
-          description,
-          eventDate: eventDate,
-          eventTime: eventTime,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post("http://localhost:3000/createEvent", formData, {
+        headers: { "Content-Type": "multipart/form-data" }, // Important for file uploads
+        withCredentials: true,
+      });
 
       if (response.status === 200) {
         alert("Event created successfully!");
-      
-        
+
         // Reset form fields
         setTitle("");
         setDescription("");
         setEventDate("");
         setEventTime("");
+        setImage(null);
 
         // Call the callback if provided
         if (onEventCreated) onEventCreated(response.data);
@@ -45,7 +46,7 @@ export function CreateEventForm({ onEventCreated }) {
         alert("Failed to create event. Unexpected response status.");
       }
     } catch (error) {
-      console.error("Failed to create event:", error.response?.data || error.message);
+      console.error("Failed to create event:", error.response.data || error.message);
       alert("Failed to create event. Please try again.");
     }
   };
@@ -94,6 +95,19 @@ export function CreateEventForm({ onEventCreated }) {
               required
             />
           </div>
+        </div>
+
+        {/* Image Upload Field */}
+        <div className="mb-4">
+          <label className="block mb-2 text-gray-700 dark:text-gray-300">Upload Event Image</label>
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0] || null)}
+            className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
+            aria-label="Event Image"
+          />
         </div>
 
         <button
