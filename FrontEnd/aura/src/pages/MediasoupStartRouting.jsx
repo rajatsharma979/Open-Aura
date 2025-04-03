@@ -288,25 +288,64 @@ const VideoStreamingApp = () => {
 
   const toggleMicrophone = () => {
     setIsMuted(!isMuted)
-    // Implement microphone muting logic here
-    
+    // Get all audio tracks from the video element's srcObject
+    if (myVideoRef.current && myVideoRef.current.srcObject) {
+      const stream = myVideoRef.current.srcObject
+      stream.getAudioTracks().forEach((track) => {
+        // Toggle the enabled state (opposite of isMuted)
+        track.enabled = isMuted
+        console.log(`Microphone ${isMuted ? "enabled" : "disabled"}`)
+      })
+    }
   }
 
-  const toggleSpeaker = () => {
-    setIsSpeakerOn(!isSpeakerOn)
-    // Implement speaker toggling logic here
-  }
+  // const toggleSpeaker = () => {
+  //   if (myVideoRef.current) {
+  //     myVideoRef.current.muted = isSpeakerOn
+  //     console.log(`Speaker ${isSpeakerOn ? "disabled" : "enabled"}`)
+  //   }
+  //   setIsSpeakerOn(!isSpeakerOn)
+  // }
 
   const toggleCamera = () => {
     setIsCameraOn(!isCameraOn)
-    // Implement camera toggling logic here
+    // Get all video tracks from the video element's srcObject
+    if (myVideoRef.current && myVideoRef.current.srcObject) {
+      const stream = myVideoRef.current.srcObject
+      stream.getVideoTracks().forEach((track) => {
+        // Toggle the enabled state (opposite of isCameraOn)
+        track.enabled = !isCameraOn
+        console.log(`Camera ${isCameraOn ? "disabled" : "enabled"}`)
+      })
+    }
   }
 
   const endBroadcast = () => {
-    // Implement logic to end the broadcast
+    // Stop all media tracks
+    if (myVideoRef.current && myVideoRef.current.srcObject) {
+      const stream = myVideoRef.current.srcObject
+      stream.getTracks().forEach((track) => {
+        track.stop()
+      })
+    }
+
+    // Close transports if they exist
+    if (sendTransport.current) {
+      sendTransport.current.close()
+    }
+
+    if (recvTransport.current) {
+      recvTransport.current.close()
+    }
+
+    // Notify server that we're leaving (if needed)
+    if (socketRef.current && currentRoomId) {
+      socketRef.current.emit("leaveBroadcast", { roomId: currentRoomId })
+    }
+
+    // Navigate away
     window.location.href = "/event"
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-200 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -325,14 +364,14 @@ const VideoStreamingApp = () => {
           >
             <Mic className="w-6 h-6" />
           </button>
-          <button
+          {/* <button
             onClick={toggleSpeaker}
             className={`p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out ${
               isSpeakerOn ? "bg-rose-800 text-rose-100" : "bg-rose-300 text-rose-800"
             } hover:bg-rose-700 hover:text-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-50`}
           >
             <Volume2 className="w-6 h-6" />
-          </button>
+          </button> */}
           <button
             onClick={toggleCamera}
             className={`p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out ${
