@@ -35,7 +35,7 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
 
     (async () => {
         worker = await mediasoup.createWorker();
-        console.log('🔧 Mediasoup Worker created');
+        console.log('Mediasoup Worker created');
         router = await worker.createRouter({
             mediaCodecs: [
                 { kind: 'audio', mimeType: 'audio/opus', clockRate: 48000, channels: 2 },
@@ -70,7 +70,7 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
             try {
 
                 if (rooms.has(roomId)) {
-                    console.error(`❌Room ${roomId} already exists`);
+                    console.error(`oom ${roomId} already exists`);
                     return callback({ error: "Room already exists" });
                 }
 
@@ -81,7 +81,7 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
                 //     ],
                 // });
 
-                // ✅ Create Room and Add Broadcaster
+                // Create Room and Add Broadcaster
                 rooms.set(roomId, {
                     router,
                     broadcasters: new Map(),
@@ -89,19 +89,19 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
                     producers: new Map(),
                 });
 
-                // ✅ Ensure broadcaster joins the room
+                // Ensure broadcaster joins the room
                 socket.join(roomId);
                 rooms.get(roomId).broadcasters.set(socket.id, socket);
 
-                console.log(`🏠 Room ${roomId} created by ${socket.id}`);
+                console.log(`Room ${roomId} created by ${socket.id}`);
 
-                // 🔴 DEBUG: Verify broadcaster is inside the room
+                //  DEBUG: Verify broadcaster is inside the room
                 const clients = await io.in(roomId).fetchSockets();
                 console.log(`👥 Users in room ${roomId} after creation:`, clients.map(c => c.id));
 
                 callback({ roomId });
             } catch (error) {
-                console.error("❌ Error starting broadcasting:", error);
+                console.error("Error starting broadcasting:", error);
                 callback({ error: "Failed to start broadcast" });
             }
         });
@@ -119,14 +119,14 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
 
                 const room = rooms.get(roomId);
                 if (!room) {
-                    console.error(`❌ Room ${roomId} not found`);
+                    console.error(`Room ${roomId} not found`);
                     return callback({ error: 'Room not found' });
                 }
         
                 room.viewers.set(socket.id, socket);
                 socket.join(roomId);
         
-                console.log(`🔵 ${socket.id} joined room ${roomId}`);
+                console.log(`${socket.id} joined room ${roomId}`);
         
                 // Send the list of existing producers to the joinee
                 const existingProducers = Array.from(room.producers.values()).map((producer: any) => ({
@@ -134,42 +134,42 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
                     kind: producer.kind,
                 }));
         
-                console.log(`📡 Sending existing producers to ${socket.id}:`, existingProducers);
+                console.log(`Sending existing producers to ${socket.id}:`, existingProducers);
                 socket.emit('existingProducers', existingProducers);
         
-                // 🔴 DEBUG: Show all users in the room
+                // DEBUG: Show all users in the room
                 const clients = await io.in(roomId).fetchSockets();
                 console.log(`👥 Users in room ${roomId}:`, clients.map(c => c.id));
         
                 callback({ success: true });
             } catch (error) {
-                console.error("❌ Error joining room:", error);
+                console.error("Error joining room:", error);
                 callback({ error: "Failed to join room" });
             }
         });
 
-        // 🌍 Get Router Capabilities
+        // Get Router Capabilities
         socket.on('getRouterRtpCapabilities', ({ roomId }, callback) => {
             const room = rooms.get(roomId);
             if (!room) {
-                console.error(`❌ Room ${roomId} not found`);
+                console.error(`Room ${roomId} not found`);
                 return callback({ error: 'Room not found' });
             }
 
-            console.log(`📡 Sending router RTP capabilities for room ${roomId}`);
+            console.log(`Sending router RTP capabilities for room ${roomId}`);
             callback(room.router.rtpCapabilities);
         });
 
-        // 🚛 Create WebRTC Transport
+        //Create WebRTC Transport
         socket.on('createTransport', async ({ roomId, isProducer }, callback) => {
             try {
                 const room = rooms.get(roomId);
                 if (!room) {
-                    console.error(`❌ Room ${roomId} not found in create transport`);
+                    console.error(`Room ${roomId} not found in create transport`);
                     return callback({ error: 'Room not found in create transport' });
                 }
 
-                console.log(`🛠 Creating ${isProducer ? 'send' : 'recv'} transport for room ${roomId}...`);
+                console.log(`Creating ${isProducer ? 'send' : 'recv'} transport for room ${roomId}...`);
 
                 const transport = await room.router.createWebRtcTransport({
                     listenIps: [{ ip: '127.0.0.1', announcedIp: null }],
@@ -178,10 +178,10 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
                     preferUdp: true,
                 });
 
-                console.log(`✅ Transport created: ${transport.id} (${isProducer ? 'send' : 'recv'})`);
+                console.log(`Transport created: ${transport.id} (${isProducer ? 'send' : 'recv'})`);
 
                 transport.on('dtlsstatechange', (state: any) => {
-                    console.log(`🔗 DTLS state changed for transport ${transport.id}:`, state);
+                    console.log(`DTLS state changed for transport ${transport.id}:`, state);
                     if (state === 'closed') transport.close();
                 });
 
@@ -199,34 +199,34 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
                     dtlsParameters: transport.dtlsParameters,
                 });
             } catch (error) {
-                console.error("❌ Error creating transport:", error);
+                console.error("Error creating transport:", error);
                 callback({ error: "Failed to create transport" });
             }
         });
 
-        // 🔗 Connect WebRTC Transport
+        // Connect WebRTC Transport
         socket.on('connectTransport', async ({ roomId, transportId, dtlsParameters }, callback) => {
             try {
-                console.log(`🔗 Connecting transport ${transportId} in room ${roomId}...`);
+                console.log(`Connecting transport ${transportId} in room ${roomId}...`);
 
                 const room = rooms.get(roomId);
                 if (!room) {
-                    console.error(`❌ Room ${roomId} not found in connect Transport`);
+                    console.error(`Room ${roomId} not found in connect Transport`);
                     return callback({ error: 'Room not found in connect transport' });
                 }
 
                 const transport = [...room.broadcasters.values(), ...room.viewers.values()].find(t => t.id === transportId);
                 if (!transport) {
-                    console.error(`❌ Transport ${transportId} not found`);
+                    console.error(`Transport ${transportId} not found`);
                     return callback({ error: 'Transport not found' });
                 }
 
                 await transport.connect({ dtlsParameters });
-                console.log(`✅ Transport ${transportId} connected`);
+                console.log(`Transport ${transportId} connected`);
 
                 callback({ success: true });
             } catch (error) {
-                console.error("❌ Error connecting transport:", error);
+                console.error("Error connecting transport:", error);
                 callback({ error: "Failed to connect transport" });
             }
         });
@@ -236,55 +236,55 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
             try {
                 const room = rooms.get(roomId);
                 if (!room) {
-                    console.error(`❌ Room ${roomId} not found in produce transport`);
+                    console.error(`Room ${roomId} not found in produce transport`);
                     return callback({ error: 'Room not found in produce transport' });
                 }
         
                 const transport = [...room.broadcasters.values()].find(t => t.id === transportId);
                 if (!transport) {
-                    console.error(`❌ Transport ${transportId} not found`);
+                    console.error(`Transport ${transportId} not found`);
                     return callback({ error: 'Transport not found' });
                 }
         
                 const producer = await transport.produce({ kind, rtpParameters });
                 room.producers.set(producer.id, producer);
         
-                console.log(`🎥 Producer created: ${producer.id} (${kind}) in room ${roomId}`);
+                console.log(`Producer created: ${producer.id} (${kind}) in room ${roomId}`);
         
                 // Notify all users in the room about the new producer
                 io.to(roomId).emit('newProducer', { producerId: producer.id, kind });
-                console.log(`📢 Emitted newProducer event for producer: ${producer.id}, kind: ${kind}`);
+                console.log(`Emitted newProducer event for producer: ${producer.id}, kind: ${kind}`);
         
                 callback({ producerId: producer.id });
             } catch (error) {
-                console.error("❌ Error producing stream:", error);
+                console.error("Error producing stream:", error);
                 callback({ error: "Failed to produce stream" });
             }
         });
 
-        // 👀 Consume Stream
+        // Consume Stream
         socket.on('consume', async ({ roomId, producerId, rtpCapabilities, transportId }, callback) => {
             try {
                 const room = rooms.get(roomId);
                 if (!room) {
-                    console.error(`❌ Room ${roomId} not found`);
+                    console.error(`Room ${roomId} not found`);
                     return callback({ error: 'Room not found' });
                 }
 
                 const transport = [...room.viewers.values()].find(t => t.id === transportId);
                 if (!transport) {
-                    console.error(`❌ Transport ${transportId} not found`);
+                    console.error(`Transport ${transportId} not found`);
                     return callback({ error: 'Transport not found' });
                 }
 
                 const producer = room.producers.get(producerId);
                 if (!producer) {
-                    console.error(`❌ Producer ${producerId} not found`);
+                    console.error(`Producer ${producerId} not found`);
                     return callback({ error: 'Producer not found' });
                 }
 
                 if (!room.router.canConsume({ producerId: producer.id, rtpCapabilities })) {
-                    console.error(`❌ Cannot consume producer ${producerId}`);
+                    console.error(`Cannot consume producer ${producerId}`);
                     return callback({ error: 'Cannot consume' });
                 }
 
@@ -294,7 +294,7 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
                     paused: true,
                 });
 
-                console.log(`✅ Consumer created: ${consumer.id} for producer ${producerId}`);
+                console.log(`Consumer created: ${consumer.id} for producer ${producerId}`);
 
                 callback({
                     id: consumer.id,
@@ -304,16 +304,16 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
                 });
 
                 await consumer.resume();
-                console.log(`▶️ Consumer ${consumer.id} resumed`);
+                console.log(`Consumer ${consumer.id} resumed`);
             } catch (error) {
-                console.error("❌ Error consuming stream:", error);
+                console.error("Error consuming stream:", error);
                 callback({ error: "Failed to consume stream" });
             }
         });
 
-        // ❌ Handle Disconnection
+        // Handle Disconnection
         socket.on('disconnect', () => {
-            console.log(`❌ User disconnected: ${socket.id}`);
+            console.log(`User disconnected: ${socket.id}`);
 
             for (const [roomId, room] of rooms.entries()) {
                 // Remove broadcaster transports
