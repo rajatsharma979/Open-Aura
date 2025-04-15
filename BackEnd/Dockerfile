@@ -20,11 +20,11 @@ COPY package*.json ./
 # Ensure PYTHON points to python3 for mediasoup builds
 ENV PYTHON=python3
 
-# Install dependencies
-RUN npm install
-
 # Copy all source files
 COPY . .
+
+# Install dependencies
+RUN npm install
 
 # Build TypeScript code
 RUN npm run build
