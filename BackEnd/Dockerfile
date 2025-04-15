@@ -21,7 +21,7 @@ COPY package*.json ./
 ENV PYTHON=python3
 
 # Install dependencies
-RUN npm install --include=dev
+RUN npm install
 
 # Copy all source files
 COPY . .
