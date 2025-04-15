@@ -134,15 +134,15 @@ const postLogin = async (req: Request, res: Response) => {
 
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
-            //secure: true,             // set this true in production as it sends cookie over https only
-            sameSite: 'strict',         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
+            secure: true,             // set this true in production as it sends cookie over https only
+            sameSite: "lax",         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
             maxAge: Number(process.env.Access_Token_Cookie_Expiry)         //15 min in millis
         });
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            //secure: true,            // set this true in production as it sends cookie over https only
-            sameSite: 'strict',        // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links.
+            secure: true,            // set this true in production as it sends cookie over https only
+            sameSite: "lax",        // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links.
             maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)              //1 day in millis
         })
 
@@ -185,15 +185,15 @@ const postRefreshTokens = async (req: Request, res: Response) => {
 
         res.cookie('accessToken', newTokens.accessToken, {
             httpOnly: true,
-            //secure: true,             
-            sameSite: 'strict',
+            secure: true,             
+            sameSite: "lax",
             //maxAge: Number(process.env.Access_Token_Cookie_Expiry)
         });
 
         res.cookie('refreshToken', newTokens.refreshToken, {
             httpOnly: true,
-            //secure: true,            
-            sameSite: 'strict',
+            secure: true,            
+            sameSite: "lax",
             //maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)
         })
 
@@ -232,14 +232,14 @@ const logout = async (req: Request, res: Response) => {
 
         res.clearCookie('accessToken', {
             httpOnly: true,
-            //secure: true,            // set this true in production as it sends cookie over https only
-            sameSite: 'strict',
+            secure: true,            // set this true in production as it sends cookie over https only
+            sameSite: "lax",
         });
 
         res.clearCookie('refreshToken', {
             httpOnly: true,
-            //secure: true,            // set this true in production as it sends cookie over https only
-            sameSite: 'strict',
+            secure: true,            // set this true in production as it sends cookie over https only
+            sameSite: "lax",
         });
 
         user.refreshToken = "";
