@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
   make \
   g++ \
   build-essential \
-  linux-headers-$(uname -r) \
+  linux-headers-amd64 \
   && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
