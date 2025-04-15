@@ -25,7 +25,7 @@ export function CreateEventForm({ onEventCreated }) {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/createEvent", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/createEvent`, formData, {
         headers: { "Content-Type": "multipart/form-data" }, // Important for file uploads
         withCredentials: true,
       });

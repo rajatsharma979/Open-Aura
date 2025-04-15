@@ -20,19 +20,19 @@ const VideoStreamingApp = () => {
 
   useEffect(() => {
     // Initialize Socket.IO connection
-    socketRef.current = io("http://localhost:3000")
+    socketRef.current = io(`${import.meta.env.VITE_BACKEND_URL}`)
 
     socketRef.current.on("connect", () => {
-      console.log("✅ Connected to server:", socketRef.current.id)
+      console.log(" Connected to server:", socketRef.current.id)
 
       setTimeout(() => {
-        console.log("📢 Emitting startBroadcastStreaming")
+        console.log(" Emitting startBroadcastStreaming")
         socketRef.current.emit("startBroadcastStreaming")
       }, 1000)
     })
 
     socketRef.current.on("connect_error", (error) => {
-      console.error("❌ Socket connection error:", error)
+      console.error(" Socket connection error:", error)
     })
 
     socketRef.current.on("startBroadcasting", () => {
@@ -41,7 +41,7 @@ const VideoStreamingApp = () => {
     })
     // Listen for existing producers
     socketRef.current.on("existingProducers", (producers) => {
-      console.log("📡 Received existing producers:", producers)
+      console.log("Received existing producers:", producers)
       setExistingProducers(producers)
     })
 
@@ -51,12 +51,12 @@ const VideoStreamingApp = () => {
     }
   }, [])
 
-  // 🌍 Get Router Capabilities
+  //  Get Router Capabilities
   function getRouterCapabilities(roomId) {
     return new Promise((resolve, reject) => {
       socketRef.current.emit("getRouterRtpCapabilities", { roomId }, (rtpCapabilities) => {
         if (!rtpCapabilities) {
-          console.error("❌ Failed to fetch router capabilities")
+          console.error(" Failed to fetch router capabilities")
           reject("No RTP Capabilities received")
           return
         }
@@ -71,26 +71,26 @@ const VideoStreamingApp = () => {
               resolve()
             })
             .catch((error) => {
-              console.error("❌ Failed to load device capabilities:", error)
+              console.error(" Failed to load device capabilities:", error)
               reject(error)
             })
         } catch (error) {
-          console.error("❌ Error loading device:", error)
+          console.error(" Error loading device:", error)
           reject(error)
         }
       })
     })
   }
 
-  // 🚪 Join a Room (For Viewers)
+  //  Join a Room (For Viewers)
   const joinRoom = async (roomId) => {
     return new Promise((resolve, reject) => {
       socketRef.current.emit("joinRoom", { roomId }, async (response) => {
         if (response.error) {
-          console.error("❌ Error joining room:", response.error)
+          console.error(" Error joining room:", response.error)
           reject(response.error)
         } else {
-          console.log(`🔵 Joined Room: ${roomId}`)
+          console.log(` Joined Room: ${roomId}`)
           setCurrentRoomId(roomId)
           await getRouterCapabilities(roomId)
           resolve()
@@ -99,17 +99,17 @@ const VideoStreamingApp = () => {
     })
   }
 
-  // 🎥 Start Broadcasting Media
+  //  Start Broadcasting Media
   async function startBroadcast() {
     try {
       // Step 1: Emit "startBroadcasting" to create a room
       const response = await new Promise((resolve, reject) => {
         socketRef.current.emit("startBroadcast", (response) => {
           if (response.error) {
-            console.error("❌ Error starting broadcast:", response.error)
+            console.error(" Error starting broadcast:", response.error)
             reject(response.error)
           } else {
-            console.log(`🏠 Broadcasting started! Room ID: ${response.roomId}`)
+            console.log(` Broadcasting started! Room ID: ${response.roomId}`)
             setCurrentRoomId(response.roomId)
             resolve(response)
           }
@@ -122,7 +122,7 @@ const VideoStreamingApp = () => {
       await getRouterCapabilities(response.roomId)
 
       // if (!device) {
-      //     console.error("❌ Device not initialized");
+      //     console.error(" Device not initialized");
       //     return;
       // }
 
@@ -137,7 +137,7 @@ const VideoStreamingApp = () => {
       const transportParams = await new Promise((resolve, reject) => {
         socketRef.current.emit("createTransport", { roomId: response.roomId, isProducer: true }, (response) => {
           if (!response || !response.id) {
-            console.error("❌ Invalid transport parameters received")
+            console.error(" Invalid transport parameters received")
             reject("Invalid transport parameters")
           } else {
             resolve(response)
@@ -145,22 +145,22 @@ const VideoStreamingApp = () => {
         })
       })
 
-      console.log("🚀 Send Transport params received:", transportParams)
+      console.log(" Send Transport params received:", transportParams)
       const newSendTransport = device.createSendTransport(transportParams)
       setSendTransport(newSendTransport)
 
       // Step 5: Set up transport event listeners
       newSendTransport.on("connect", ({ dtlsParameters }, callback, errback) => {
-        console.log("🔗 Connecting send transport...")
+        console.log(" Connecting send transport...")
         socketRef.current.emit(
           "connectTransport",
           { roomId: response.roomId, transportId: newSendTransport.id, dtlsParameters },
           (response) => {
             if (response.error) {
-              console.error("❌ Error connecting transport:", response.error)
+              console.error(" Error connecting transport:", response.error)
               errback(response.error)
             } else {
-              console.log("✅ Send transport connected!")
+              console.log(" Send transport connected!")
               callback()
             }
           },
@@ -187,44 +187,44 @@ const VideoStreamingApp = () => {
         await newSendTransport.produce({ track })
       }
 
-      console.log("✅ Broadcasting started")
+      console.log(" Broadcasting started")
     } catch (error) {
-      console.error("❌ Error in startBroadcast:", error)
+      console.error(" Error in startBroadcast:", error)
     }
   }
 
-  // 👀 Join an Event as Viewer
+  //  Join an Event as Viewer
   const joinEvent = async (roomId) => {
     await joinRoom(roomId)
 
     if (!device) {
-      console.error("❌ Device not initialized")
+      console.error(" Device not initialized")
       return
     }
 
-    console.log("📡 Joining event...")
-    console.log("🎥 Requesting receive transport creation...")
+    console.log(" Joining event...")
+    console.log(" Requesting receive transport creation...")
     socketRef.current.emit("createTransport", { roomId, isProducer: false }, async (transportParams) => {
       if (!transportParams || !transportParams.id) {
-        console.error("❌ Invalid transport parameters received")
+        console.error(" Invalid transport parameters received")
         return
       }
 
-      console.log("🚀 Receive Transport params received:", transportParams)
+      console.log(" Receive Transport params received:", transportParams)
       const newRecvTransport = device.createRecvTransport(transportParams)
       setRecvTransport(newRecvTransport)
 
       newRecvTransport.on("connect", ({ dtlsParameters }, callback, errback) => {
-        console.log("🔗 Connecting receive transport...")
+        console.log(" Connecting receive transport...")
         socketRef.current.emit(
           "connectTransport",
           { roomId, transportId: newRecvTransport.id, dtlsParameters },
           (response) => {
             if (response.error) {
-              console.error("❌ Error connecting transport:", response.error)
+              console.error(" Error connecting transport:", response.error)
               errback(response.error)
             } else {
-              console.log("✅ Receive transport connected!")
+              console.log(" Receive transport connected!")
               callback()
             }
           },
@@ -233,33 +233,33 @@ const VideoStreamingApp = () => {
 
       // 🔹 Listen for new producers
       socketRef.current.on("newProducer", async ({ producerId, kind }) => {
-        console.log(`🎥 [NEW PRODUCER RECEIVED] ID: ${producerId}, Kind: ${kind}`)
+        console.log(` [NEW PRODUCER RECEIVED] ID: ${producerId}, Kind: ${kind}`)
         await consumeStream(roomId, producerId)
       })
 
-      console.log("📡 Ready to receive streams")
+      console.log(" Ready to receive streams")
     })
   }
 
-  // 🔥 Consume a Producer's Stream
+  //  Consume a Producer's Stream
   const consumeStream = async (roomId, producerId) => {
     if (!recvTransport) {
-      console.error("❌ Receive transport not initialized")
+      console.error(" Receive transport not initialized")
       return
     }
 
-    console.log("📡 Requesting to consume producer: ${producerId}")
+    console.log(" Requesting to consume producer: ${producerId}")
 
     socketRef.current.emit(
       "consume",
       { roomId, producerId, rtpCapabilities: device.rtpCapabilities, transportId: recvTransport.id },
       async (response) => {
         if (response.error) {
-          console.error("❌ Error consuming stream:", response.error)
+          console.error(" Error consuming stream:", response.error)
           return
         }
 
-        console.log("✅ Consuming stream response received:", response)
+        console.log(" Consuming stream response received:", response)
 
         try {
           const consumer = await recvTransport.consume({
@@ -269,7 +269,7 @@ const VideoStreamingApp = () => {
             rtpParameters: response.rtpParameters,
           })
 
-          console.log(`✅ Successfully consumed ${response.kind} stream`)
+          console.log(` Successfully consumed ${response.kind} stream`)
 
           // Create a media element for the stream
           const mediaElement = document.createElement(response.kind === "video" ? "video" : "audio")
@@ -278,9 +278,9 @@ const VideoStreamingApp = () => {
           mediaElement.srcObject = new MediaStream([consumer.track])
           document.body.appendChild(mediaElement)
 
-          console.log(`✅ ${response.kind} stream attached to DOM`)
+          console.log(` ${response.kind} stream attached to DOM`)
         } catch (error) {
-          console.error("❌ Error consuming stream:", error)
+          console.error(" Error consuming stream:", error)
         }
       },
     )

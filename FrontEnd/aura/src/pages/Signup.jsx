@@ -19,7 +19,7 @@ export default function Signup() {
     // Redirect user to the backend's Google OAuth authentication endpoint
     // Include the frontend redirect URL as a parameter
     const redirectUrl = encodeURIComponent(`${window.location.origin}/auth/google/callback`)
-    window.location.href = `http://localhost:3000/auth/google?redirect=${redirectUrl}`
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google?redirect=${redirectUrl}`
   }
 
   const handleSubmit = (e) => {
@@ -27,7 +27,7 @@ export default function Signup() {
     setErrors([])
     axios
       .post(
-        "http://localhost:3000/signup",
+        `${import.meta.env.VITE_BACKEND_URL}/signup`,
         { name, email, password },
         { headers: { "Content-Type": "application/json" } },
       )

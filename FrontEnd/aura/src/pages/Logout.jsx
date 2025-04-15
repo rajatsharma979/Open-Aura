@@ -9,7 +9,7 @@ const Logout = () => {
   // Fetch the client_id from the backend API
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/google-client-id") // Backend endpoint
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/google-client-id`) // Backend endpoint
       .then((response) => {
         setClientId(response.data.googleClientId);
       })
@@ -40,7 +40,7 @@ const Logout = () => {
 
           // Then log out from your backend
           axios
-            .post("http://localhost:3000/logout", {}, { withCredentials: true })
+            .post(`${import.meta.env.VITE_BACKEND_URL}/logout`, {}, { withCredentials: true })
             .then((response) => {
               if (response.status === 200) {
                 console.log("Logged out from backend successfully");

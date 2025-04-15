@@ -96,7 +96,7 @@ const EventLandingPage = () => {
   const startBroadcast = async (eventId) => {
     try {
 
-      fetch("http://localhost:3000/startEvent/startBroadcasting", {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/startEvent/startBroadcasting`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-type": "application/json" },
@@ -207,7 +207,7 @@ const EventLandingPage = () => {
                     className="bg-white/80 dark:bg-[#9ab2ec] rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden backdrop-blur-sm border border-rose-100 dark:border-gray-700"
                   >
                     <img
-                      src={`http://localhost:3000${event.thumbnail}`}
+                      src={`${import.meta.env.VITE_BACKEND_URL}${event.thumbnail}`}
                       alt={event.name}
                       className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                     />
@@ -293,7 +293,7 @@ const EventLandingPage = () => {
                       className="bg-black/80 dark:bg-[#9ab2ec] rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden backdrop-blur-sm border border-rose-100 dark:border-gray-700"
                     >
                       <img
-                        src={`http://localhost:3000${event.thumbnail}`}
+                        src={`${import.meta.env.VITE_BACKEND_URL}${event.thumbnail}`}
                         alt={event.name}
                         className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                       />
@@ -335,7 +335,7 @@ const EventLandingPage = () => {
                     className="bg-black/80 dark:bg-[#9ab2ec] rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden backdrop-blur-sm border border-rose-100 dark:border-gray-700"
                   >
                     <img
-                      src={`http://localhost:3000${event.thumbnail}`}
+                      src={`${import.meta.env.VITE_BACKEND_URL}${event.thumbnail}`}
                       alt={event.name}
                       className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                     />
