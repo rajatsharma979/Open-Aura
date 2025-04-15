@@ -186,14 +186,14 @@ const postRefreshTokens = async (req: Request, res: Response) => {
         res.cookie('accessToken', newTokens.accessToken, {
             httpOnly: true,
             secure: true,             
-            sameSite: "lax",
+            sameSite: "none",
             //maxAge: Number(process.env.Access_Token_Cookie_Expiry)
         });
 
         res.cookie('refreshToken', newTokens.refreshToken, {
             httpOnly: true,
             secure: true,            
-            sameSite: "lax",
+            sameSite: "none",
             //maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)
         })
 
@@ -233,13 +233,13 @@ const logout = async (req: Request, res: Response) => {
         res.clearCookie('accessToken', {
             httpOnly: true,
             secure: true,            // set this true in production as it sends cookie over https only
-            sameSite: "lax",
+            sameSite: "none",
         });
 
         res.clearCookie('refreshToken', {
             httpOnly: true,
             secure: true,            // set this true in production as it sends cookie over https only
-            sameSite: "lax",
+            sameSite: "none",
         });
 
         user.refreshToken = "";
