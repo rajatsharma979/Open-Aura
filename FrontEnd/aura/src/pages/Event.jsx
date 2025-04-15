@@ -21,7 +21,7 @@ const EventLandingPage = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/getEvents", { withCredentials: true })
+      .get(`${import.meta.env.VITE_BACKEND_URL}/getEvents`, { withCredentials: true })
       .then((response) => {
         console.log("Fetched Events:", response.data)
         setMyEvents(response.data.myEvents)
@@ -47,7 +47,7 @@ const EventLandingPage = () => {
 
   const fetchMyEvents = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getEvents", { withCredentials: true })
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/getEvents`, { withCredentials: true })
       if (response.status === 200) {
         // console.log("Fetched Events:", response.data.myEvents)
         setMyEvents(response.data.myEvents)
@@ -82,7 +82,7 @@ const EventLandingPage = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/logout", {}, { withCredentials: true })
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/logout`, {}, { withCredentials: true })
       if (response.status === 200) {
         console.log("Signing Off...")
         navigate("/")
