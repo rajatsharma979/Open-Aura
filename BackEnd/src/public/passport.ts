@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import User from "../models/userModel.js";
-import { userType } from "../types/authTypes";
+import { userType } from "../types/authTypes.js";
 
 const emailConfiguration = {
     host: process.env.Brevo_smtpServer,

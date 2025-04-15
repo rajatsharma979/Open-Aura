@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import User from "../models/userModel.js";
-import { userType, loginData, signupData } from "../types/authTypes";
+import { userType, loginData, signupData } from "../types/authTypes.js";
 
 interface refreshTokenType extends JwtPayload {
     id: string

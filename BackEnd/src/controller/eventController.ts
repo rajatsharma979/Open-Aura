@@ -5,7 +5,7 @@ import { Server} from "socket.io";
 import { Worker } from "mediasoup/node/lib/types";
 
 import Events from "../models/eventsModel.js";
-import { eventData, fetchedEvent, userData } from "../types/eventTypes";
+import { eventData, fetchedEvent, userData } from "../types/eventTypes.js";
 import mediasoupStartCreation from "../public/mediasoupBroadcasting.js";
 
 const fetchEvents = async (userId: string)=>{
