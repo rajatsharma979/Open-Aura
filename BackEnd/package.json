@@ -46,6 +46,7 @@
     "@types/node": "^22.10.9",
     "@types/nodemailer": "^6.4.17",
     "@types/passport": "^1.0.17",
-    "@types/passport-google-oauth2": "^0.1.10"
+    "@types/passport-google-oauth2": "^0.1.10",
+    "typescript": "^5.8.3"
   }
 }
