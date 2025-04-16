@@ -59,21 +59,21 @@ router.get('/auth/google/callback',
         }
         res.cookie('accessToken', userWithToken.accessToken, {
             httpOnly: true,
-            //secure: true,             // set this true in production as it sends cookie over https only
-            sameSite: 'strict',         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
-            //maxAge: Number(process.env.Access_Token_Cookie_Expiry)         //15 min in millis
+            secure: true,             // set this true in production as it sends cookie over https only
+            sameSite: 'none',         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
+            maxAge: Number(process.env.Access_Token_Cookie_Expiry)         //15 min in millis
         });
 
         res.cookie('refreshToken', userWithToken.refreshToken, {
             httpOnly: true,
-            //secure: true,             // set this true in production as it sends cookie over https only
-            sameSite: 'strict',         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
-            //maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)         //15 min in millis
+            secure: true,             // set this true in production as it sends cookie over https only
+            sameSite: 'none',         // can be set to lax also. The cookie is sent with same-site requests and with "safe" cross-site requests like GET requests originating from links. 
+            maxAge: Number(process.env.Refresh_Token_Cookie_Expiry)         //15 min in millis
         });
 
         //res.status(200).json({"msg": "successfully registered"});
 
-        res.redirect('http://localhost:5173/event');
+        res.redirect(`${process.env.Frontend_Url}/event`);
         // res.redirect('http://localhost:3000/getEvents');
         return;
     });
