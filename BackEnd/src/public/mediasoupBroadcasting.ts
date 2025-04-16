@@ -29,6 +29,8 @@ import { Worker, Router, Producer, Consumer, WebRtcTransport } from "mediasoup/n
 //     transportId: string;
 // };
 
+const rooms = new Map();
+
 const mediasoupFunctioning = async (req: Request, res: Response, io: Server, worker: Worker,roomId: string)=>{
 
     let router: Router;
@@ -46,7 +48,6 @@ const mediasoupFunctioning = async (req: Request, res: Response, io: Server, wor
     })();
 
     console.log("==========Inside mediasoup functioning==============");
-    const rooms = new Map();
     
     io.on('connection', async (socket) => {
         
