@@ -382,30 +382,30 @@ const VideoStreamingApp = () => {
           </div>
         </div>
         <div className="flex justify-center gap-6 mt-6">
-          <button
+          {/* <button
             onClick={toggleMicrophone}
             className={`p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out ${
               isMuted ? "bg-rose-300 text-rose-800" : "bg-rose-800 text-rose-100"
             } hover:bg-rose-700 hover:text-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-50`}
           >
             <Mic className="w-6 h-6" />
-          </button>
-          <button
+          </button> */}
+          {/* <button
             onClick={toggleSpeaker}
             className={`p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out ${
               isSpeakerOn ? "bg-rose-800 text-rose-100" : "bg-rose-300 text-rose-800"
             } hover:bg-rose-700 hover:text-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-50`}
           >
             <Volume2 className="w-6 h-6" />
-          </button>
-          <button
+          </button> */}
+          {/* <button
             onClick={toggleCamera}
             className={`p-4 rounded-full shadow-lg transition-all duration-300 ease-in-out ${
               isCameraOn ? "bg-rose-800 text-rose-100" : "bg-rose-300 text-rose-800"
             } hover:bg-rose-700 hover:text-rose-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-50`}
-          >
-            <Video className="w-6 h-6" />
-          </button>
+          > */}
+            {/* <Video className="w-6 h-6" /> */}
+          {/* </button> */}
           <button
             onClick={endBroadcast}
             className="p-4 bg-red-600 text-white rounded-full shadow-lg transition-all duration-300 ease-in-out hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"

@@ -387,7 +387,7 @@ const VideoStreamingApp = () => {
             <X className="w-6 h-6" />
           </button>
         </div>
-        <div className="mt-12 bg-white bg-opacity-70 p-6 rounded-2xl shadow-lg backdrop-blur-sm">
+        {/* <div className="mt-12 bg-white bg-opacity-70 p-6 rounded-2xl shadow-lg backdrop-blur-sm">
           <h3 className="text-2xl font-semibold mb-4 text-rose-800">Active Viewers</h3>
           <ul className="space-y-3">
             {existingProducers.map((producer) => (
@@ -396,7 +396,7 @@ const VideoStreamingApp = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
       </div>
     </div>
   )

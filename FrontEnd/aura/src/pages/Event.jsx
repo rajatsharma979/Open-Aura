@@ -147,12 +147,12 @@ const EventLandingPage = () => {
               href="#about"
               className="mx-4 text-gray-600 dark:text-gray-300 hover:text-[#A04142] dark:hover:text-[#A01959] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#A04142] dark:after:bg-[#A01959] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
             >
-              About
+              {/* About
             </a>
             <a
               href="#events"
               className="mx-4 text-gray-600 dark:text-gray-300 hover:text-[#A04142] dark:hover:text-[#A01959] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#A04142] dark:after:bg-[#A01959] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
-            >
+            > */}
               Events
             </a>
             <a
@@ -234,19 +234,19 @@ const EventLandingPage = () => {
         </div>
 
         {/* About Section */}
-        <section id="about" className="mb-12">
+        {/* <section id="about" className="mb-12">
           <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-[#e2a1a2] to-[#A01959] bg-clip-text text-transparent">About Us</h2>
           <p className="text-gray-700 dark:text-gray-300">
             EventHub is your go-to platform for creating and joining exciting events. Whether you&apos;re hosting a
             webinar, planning a meetup, or attending a conference, we&apos;ve got you covered with easy-to-use tools and
             a vibrant community.
           </p>
-        </section>
+        </section> */}
 
         {/* Event Blocks */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Join Event Block */}
-          <div className="bg-white/90 dark:bg-gray-800/90 p-8 rounded-xl shadow-xl backdrop-blur-sm border border-rose-100 dark:border-gray-700">
+          {/* <div className="bg-white/90 dark:bg-gray-800/90 p-8 rounded-xl shadow-xl backdrop-blur-sm border border-rose-100 dark:border-gray-700">
             <h3 className="text-4xl font-bold mb-6 bg-gradient-to-r from-[#e2a1a2] to-[#A01959] bg-clip-text text-transparent">Join an Event</h3>
             <form onSubmit={handleJoinEvent}>
               <input
@@ -263,7 +263,7 @@ const EventLandingPage = () => {
                 Join Event
               </button>
             </form>
-          </div>
+          </div> */}
 
           {/* Create Event Block */}
           {<CreateEventForm onEventCreated={handleEventCreated} />}
